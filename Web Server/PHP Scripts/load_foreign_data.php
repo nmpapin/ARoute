@@ -3,6 +3,8 @@
 	
 	$database = new Database();
 	
+	set_time_limit(240);
+	
 	function do_post_request($url, $data, $optional_headers = null)
 	{
 		$data_count = count($data);
@@ -67,48 +69,47 @@
 	
 	$routes = $database->getResults("SELECT id FROM Route;");
 	
+	$head_val = '';
+	
 	foreach($routes AS $route)
 	{
-		if(!$database->getResult("SELECT * FROM Route_Variation WHERE route_id='".mysql_real_escape_string($route['route_id'])."';"))
+		$headsigns = json_decode(do_post_request("http://spice.ridecell.com/desktop/route_headsigns/", array("route_id" => $route['id'])), true);
+		$headsigns = $headsigns[1];
+		
+		foreach($headsigns AS $head)
 		{
-			$headsigns = json_decode(do_post_request("http://spice.ridecell.com/desktop/route_headsigns/", array("route_id" => $route['id'])), true);
-			$headsigns = $headsigns[1];
-			
-			foreach($headsigns AS $head)
+			if(!$database->getResult
+			(
+				"SELECT * 
+				FROM Route_Variation 
+				WHERE route_id='".mysql_real_escape_string($head['route_id'])."' 
+				AND direction='".mysql_real_escape_string($head['direction'])."' 
+				AND variation_name='".mysql_real_escape_string($head['headsign'])."' 
+				AND route_shape_id='".mysql_real_escape_string($head['shape_id'])."';"
+			))
 			{
-				if(!$database->getResult
-				(
-					"SELECT * 
-					FROM Route_Variation 
-					WHERE route_id='".mysql_real_escape_string($head['route_id'])."' 
-					AND direction='".mysql_real_escape_string($head['direction'])."' 
-					AND variation_name='".mysql_real_escape_string($head['headsign'])."' 
-					AND route_shape_id='".mysql_real_escape_string($head['shape_id'])."';"
-				))
-				{
-					$head_val = "(".mysql_real_escape_string($head['direction']).",'".mysql_real_escape_string($head['headsign'])."',".mysql_real_escape_string($head['route_id']).",".mysql_real_escape_string($head['shape_id']).")";
-					
-					$database->getResultInserted
-					(
-						"INSERT INTO Route_Variation
-						(direction, variation_name, route_id, route_shape_id)
-						VALUES $head_val;"
-					);
-				}
+				$head_val .= "(".mysql_real_escape_string($head['direction']).",'".mysql_real_escape_string($head['headsign'])."',".mysql_real_escape_string($head['route_id']).",".mysql_real_escape_string($head['shape_id'])."),";
 			}
 		}
 	}
+	$head_val = rtrim($head_val, ',');
 	
-	$headsignz = $database->getResults("SELECT * FROM Route_Variation");
+	$database->getResultInserted
+	(
+		"INSERT INTO Route_Variation
+		(direction, variation_name, route_id, route_shape_id)
+		VALUES $head_val;"
+	);
 	
-	foreach($headsignz AS $head)
+	set_time_limit(240);
+	
+	$headsigns = $database->getResults("SELECT * FROM Route_Variation");
+	
+	foreach($headsigns AS $head)
 	{
 		if(!$database->getResult("SELECT id FROM Route_Stop WHERE route_var_id='".mysql_real_escape_string($head['id'])."';"))
 		{
 			$stops_arg = array("route_id" => $head['route_id'], "headsign" => $head['variation_name'], "direction" => $head['direction'], "shape_id" => $head['route_shape_id']);
-		
-			echo do_post_request("http://spice.ridecell.com/get_stops_with_locations/", $stops_arg);
-			exit;
 		
 			$stops = json_decode(do_post_request("http://spice.ridecell.com/get_stops_with_locations/", $stops_arg), true);
 			
@@ -132,20 +133,28 @@
 				}
 			}
 			
-			// FIX ME!
 			$ordered_stops = $stops['ordered_stops_details'];
 			
 			// Add the route variation stops.
+			$route_stop_val = '';
 			for($i = 0; $i < count($ordered_stops); $i++)
+			{
+				$route_stop_val .= "(".mysql_real_escape_string($head['id']).",".mysql_real_escape_string($ordered_stops[$i][1]).",".mysql_real_escape_string($i)."),";
+			}
+			$route_stop_val = rtrim($route_stop_val, ',');
+			
+			if(strlen($route_stop_val) > 0)
 			{
 				$database->getResultInserted
 				(
 					"INSERT INTO Route_Stop
-					(route_var_id, stop_id, order)
-					VALUES (".mysql_real_escape_string($head['id']).",".$ordered_stops[$i][1].",".mysql_real_escape_string($i).");"
+					(route_var_id, stop_id, route_order)
+					VALUES $route_stop_val;"
 				);
 			}
 		}
+		
+		set_time_limit(240);
 	}
 	
 	echo "Done";

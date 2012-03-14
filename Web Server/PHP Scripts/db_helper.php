@@ -26,9 +26,6 @@
 			{
 				die("An error occured while connecting to the database.<br /><br />" . mysql_error());
 			}
-			
-			// Take care of destroying the database on shutdown.
-			register_shutdown_function(array(&$this, "shutdown" ));
 		}
 		
 		// Obtains the result of a database select statement as an associated array.
@@ -104,12 +101,6 @@
 			{
 				die(mysql_error());
 			}
-		}
-		
-		// Closes the database connection.
-		function shutdown()
-		{
-			mysql_close($this->connection);
 		}
 	}
 ?>
