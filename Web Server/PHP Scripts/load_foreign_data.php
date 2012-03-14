@@ -5,97 +5,149 @@
 	
 	function do_post_request($url, $data, $optional_headers = null)
 	{
-		$post_url = '';
-		foreach($data AS $key=>$value) 
-			$post_url .= $key.'='.$value.'&'; 
-		$post_url = rtrim($post_url, '&'); 
-
-		$params = array('http' => array(
-			'method' => 'POST',
-			'content' => $post_url
-		));
-		
-		if ($optional_headers !== null) 
+		$data_count = count($data);
+		$data_string = '';
+		foreach($data as $key=>$value)
 		{
-			$params['http']['header'] = $optional_headers;
+			$data_string .= $key.'='.$value.'&';
+		}
+		$data_string = rtrim($data_string, '&');
+		
+		$ch = curl_init();
+		
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		
+		$res = curl_exec($ch);
+		if(!$res)
+		{
+			trigger_error(curl_error($ch));
 		}
 		
-		$ctx = stream_context_create($params);
-		
-		$fp = @fopen($url, 'rb', false, $ctx);
-		if (!$fp) 
-		{
-			throw new Exception("Problem with $url, $php_errormsg");
-		}
-		
-		$response = @stream_get_contents($fp);
-		if ($response === false) 
-		{
-			throw new Exception("Problem reading data from $url, $php_errormsg");
-		}
-		
-		fclose($fp);
-		
-		return $response;
+		curl_close($ch);
+		return $res;
 	}
+	
+	echo "";
 	
 	// Format Array of {"id": #, "short_name": bus_route or line, "name": name}
 	$bus_routes = json_decode(file_get_contents("http://spice.ridecell.com/get_routes/buses/"), true);
 	$train_routes = json_decode(file_get_contents("http://spice.ridecell.com/get_routes/trains/"), true);
-	
-	$route_id_map = array();
+
 	foreach($bus_routes AS $value)
-	{
-		$route_vals = "('".mysql_real_escape_string($value['short_name'])."','".mysql_real_escape_string($value['name'])."','Bus')";
-		
-		$route_id_map[$value['id']] = $database->getResultInserted
-		(
-			"INSERT INTO Route
-			(marta_id, route_name, type)
-			VALUES $route_vals;"
-		);
-	}
-	foreach($train_routes AS $value)
-	{
-		$route_vals = "('".mysql_real_escape_string($value['short_name'])."','".mysql_real_escape_string($value['name'])."','Train')";
-		
-		$route_id_map[$value['id']] = $database->getResultInserted
-		(
-			"INSERT INTO Route
-			(marta_id, route_name, type)
-			VALUES $route_vals;"
-		);
-	}
-	
-	$routes = array_merge($bus_routes, $train_routes);
-	
-	$headsign_route_map = array();
-	foreach($routes AS $value)
-	{
-		sleep(1);
-	
-		$headsigns = json_decode(do_post_request("http://spice.ridecell.com/desktop/route_headsigns/", array("route_id" => $value['id'])), true);
-		$headsigns = $headsigns[1];
-		$headsign_route_map[$value['id']] = $headsigns;
-		
-		foreach($headsigns AS $val2)
+	{		
+		if(!$database->getResult("SELECT id FROM Route WHERE id='".mysql_real_escape_string($value['id'])."';"))
 		{
-			$head_val = "(".mysql_real_escape_string($val2['direction']).",'".mysql_real_escape_string($val2['headsign'])."',".mysql_real_escape_string($route_id_map[$val2['route_id']]).")";
+			$route_vals = "(". mysql_real_escape_string($value['id']) .",'".mysql_real_escape_string($value['short_name'])."','".mysql_real_escape_string($value['name'])."','Bus')";
 			
 			$database->getResultInserted
 			(
-				"INSERT INTO Route_Variation
-				(direction, variation_name, route_id)
-				VALUES $head_val;"
+				"INSERT INTO Route
+				(id, marta_id, route_name, type)
+				VALUES $route_vals;"
+			);
+		}
+	}
+	foreach($train_routes AS $value)
+	{		
+		if(!$database->getResult("SELECT id FROM Route WHERE id='".mysql_real_escape_string($value['id'])."';"))
+		{
+			$route_vals = "(". mysql_real_escape_string($value['id']) .",'".mysql_real_escape_string($value['short_name'])."','".mysql_real_escape_string($value['name'])."','Train')";
+		
+			$database->getResultInserted
+			(
+				"INSERT INTO Route
+				(id, marta_id, route_name, type)
+				VALUES $route_vals;"
 			);
 		}
 	}
 	
-	//$head_val = trim($head_val, ',');
+	$routes = $database->getResults("SELECT id FROM Route;");
 	
-	// Format: [success?, [{"direction": #(0 = south; 1 = north; 2 = east; 3 = west), "name": short_name, "color": color to print, "headsign": reads on bus, "route_id": #, "shape": array of 
-	// coords for map, shape_id: "#"}, ...], bounds, error message
-	//$headsigns = do_post_request("http://spice.ridecell.com/desktop/route_headsigns/", array("route_id" => $bus_routes[0]['id']));
+	foreach($routes AS $route)
+	{
+		if(!$database->getResult("SELECT * FROM Route_Variation WHERE route_id='".mysql_real_escape_string($route['route_id'])."';"))
+		{
+			$headsigns = json_decode(do_post_request("http://spice.ridecell.com/desktop/route_headsigns/", array("route_id" => $route['id'])), true);
+			$headsigns = $headsigns[1];
+			
+			foreach($headsigns AS $head)
+			{
+				if(!$database->getResult
+				(
+					"SELECT * 
+					FROM Route_Variation 
+					WHERE route_id='".mysql_real_escape_string($head['route_id'])."' 
+					AND direction='".mysql_real_escape_string($head['direction'])."' 
+					AND variation_name='".mysql_real_escape_string($head['headsign'])."' 
+					AND route_shape_id='".mysql_real_escape_string($head['shape_id'])."';"
+				))
+				{
+					$head_val = "(".mysql_real_escape_string($head['direction']).",'".mysql_real_escape_string($head['headsign'])."',".mysql_real_escape_string($head['route_id']).",".mysql_real_escape_string($head['shape_id']).")";
+					
+					$database->getResultInserted
+					(
+						"INSERT INTO Route_Variation
+						(direction, variation_name, route_id, route_shape_id)
+						VALUES $head_val;"
+					);
+				}
+			}
+		}
+	}
 	
-	//echo $headsigns;
+	$headsignz = $database->getResults("SELECT * FROM Route_Variation");
+	
+	foreach($headsignz AS $head)
+	{
+		if(!$database->getResult("SELECT id FROM Route_Stop WHERE route_var_id='".mysql_real_escape_string($head['id'])."';"))
+		{
+			$stops_arg = array("route_id" => $head['route_id'], "headsign" => $head['variation_name'], "direction" => $head['direction'], "shape_id" => $head['route_shape_id']);
+		
+			echo do_post_request("http://spice.ridecell.com/get_stops_with_locations/", $stops_arg);
+			exit;
+		
+			$stops = json_decode(do_post_request("http://spice.ridecell.com/get_stops_with_locations/", $stops_arg), true);
+			
+			$stop_ids = $stops['stop_ids'];
+			$stop_names = $stops['stop_names'];
+			$stop_pos = $stops['stop_lat_lngs'];
+			
+			// Make the stops.
+			for($i = 0; $i < count($stop_ids); $i++)
+			{
+				if(!$database->getResult("SELECT * FROM Stop WHERE id='".mysql_real_escape_string($stop_ids[$i])."';"))
+				{
+					$stop_val = "(".mysql_real_escape_string($stop_ids[$i]).",'".mysql_real_escape_string($stop_names[$i])."',".mysql_real_escape_string($stop_pos[$i][0]).",".mysql_real_escape_string($stop_pos[$i][1]).")";
+					
+					$database->getResultInserted
+					(
+						"INSERT INTO Stop
+						(id, name, latitude, longitude)
+						VALUES $stop_val;"
+					);
+				}
+			}
+			
+			// FIX ME!
+			$ordered_stops = $stops['ordered_stops_details'];
+			
+			// Add the route variation stops.
+			for($i = 0; $i < count($ordered_stops); $i++)
+			{
+				$database->getResultInserted
+				(
+					"INSERT INTO Route_Stop
+					(route_var_id, stop_id, order)
+					VALUES (".mysql_real_escape_string($head['id']).",".$ordered_stops[$i][1].",".mysql_real_escape_string($i).");"
+				);
+			}
+		}
+	}
+	
+	echo "Done";
+	exit;
 ?>
