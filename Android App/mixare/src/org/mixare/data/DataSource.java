@@ -46,7 +46,7 @@ public class DataSource extends Activity {
 	
 	private String name;
 	private String url;
-	public enum TYPE { WIKIPEDIA, BUZZ, TWITTER, OSM, MIXARE };
+	public enum TYPE { WIKIPEDIA, BUZZ, TWITTER, OSM, MIXARE, AROUTE };
 	public enum DISPLAY { CIRCLE_MARKER, NAVIGATION_MARKER };
 	private boolean enabled;
 	private TYPE type;
@@ -202,6 +202,14 @@ public class DataSource extends Activity {
 			
 			case OSM: 
 				ret+= XMLHandler.getOSMBoundingBox(lat, lon, radius);
+			break;
+			
+			case AROUTE:
+				ret+=
+				"?latitude=" + Double.toString(lat) + 
+				"&longitude=" + Double.toString(lon) + 
+				"&radius=" + Double.toString(radius) +
+				"&maxRows=50";
 			break;
 			}
 			
