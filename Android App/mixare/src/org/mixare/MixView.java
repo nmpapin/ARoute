@@ -232,7 +232,7 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 			myZoomBar = new SeekBar(this);
 			myZoomBar.setVisibility(View.INVISIBLE);
 			myZoomBar.setMax(100);
-			myZoomBar.setProgress(settings.getInt("zoomLevel", 65));
+			myZoomBar.setProgress(settings.getInt("zoomLevel", 25));
 			myZoomBar.setOnSeekBarChangeListener(myZoomBarOnSeekBarChangeListener);
 			myZoomBar.setVisibility(View.INVISIBLE);			
 

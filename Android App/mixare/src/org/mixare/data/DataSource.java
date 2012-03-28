@@ -209,7 +209,7 @@ public class DataSource extends Activity {
 				"?latitude=" + Double.toString(lat) + 
 				"&longitude=" + Double.toString(lon) + 
 				"&radius=" + Double.toString(radius) +
-				"&maxRows=50";
+				"&maxRows=25";
 			break;
 			}
 			

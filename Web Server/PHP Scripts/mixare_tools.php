@@ -21,8 +21,6 @@
 			'elevation' => 0,
 			'title' => 'No Title',
 			'distance' => 0,
-			'has_detail_page' => 0,
-			'webpage' => ''
 		);
 	
 		$ret = array();
@@ -31,13 +29,14 @@
 		{
 			$item_arr = array();
 			
+			foreach($mapping AS $key => $value)
+			{
+				$item_arr[$key] = $item[$value];
+			}
+			
 			foreach($properties AS $key => $value)
 			{
-				if(isset($mapping[$key]))
-				{
-					$item_arr[$key] = $item[$mapping[$key]];
-				}
-				else
+				if(!isset($item_arr[$key]))
 				{
 					$item_arr[$key] = $value;
 				}

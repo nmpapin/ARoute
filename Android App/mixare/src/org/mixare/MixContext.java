@@ -41,6 +41,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.X509TrustManager;
 
+import org.mixare.BusStopMarker.Route;
 import org.mixare.data.DataSource;
 import org.mixare.data.DataSourceList;
 import org.mixare.render.Matrix;
@@ -68,8 +69,7 @@ import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
-import android.widget.Toast;
+import android.widget.*;
 
 /**
  * Cares about location management and about
@@ -431,6 +431,37 @@ public class MixContext extends ContextWrapper {
 			is.close();
 	}
 
+	public void loadStopDetailsDialog(String title, Route[] routes)
+	{
+		Dialog d = new Dialog(mixView)
+		{
+			public boolean onKeyDown(int keyCode, KeyEvent event) {
+				if (keyCode == KeyEvent.KEYCODE_BACK)
+					this.dismiss();
+				return true;
+			}
+		};
+		
+		d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		d.getWindow().setGravity(Gravity.CENTER);
+		d.setContentView(R.layout.stopdetailsdialog);
+		
+		TextView titleView = (TextView)d.findViewById(R.id.stopDetailDialogTitle);
+		titleView.setText(title);
+		
+		ListView list = (ListView)d.findViewById(R.id.stopDetailDialogRouteList);
+		
+		ListAdapter adapter = new ArrayAdapter<Route>(
+                this, 
+                R.layout.stopdetailsdialogitem, 
+                R.id.routeName, 
+                routes);
+		
+		list.setAdapter(adapter);
+		
+		d.show();
+	}
+	
 	public void loadMixViewWebPage(String url) throws Exception {
 		// TODO
 		WebView webview = new WebView(mixView);

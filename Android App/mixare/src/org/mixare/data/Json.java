@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mixare.BusStopMarker;
+import org.mixare.BusStopMarker.Route;
 import org.mixare.Marker;
 import org.mixare.MixContext;
 import org.mixare.MixView;
@@ -74,8 +76,11 @@ public class Json extends DataHandler {
 					case WIKIPEDIA:
 						ma = processWikipediaJSONObject(jo, datasource);
 						break;
+					case AROUTE:
+						ma = processARouteJSONObject(jo, datasource);
+						break;
 					case MIXARE:
-						default:
+					default:
 						ma = processMixareJSONObject(jo, datasource);
 						break;
 					}
@@ -105,7 +110,7 @@ public class Json extends DataHandler {
 				// Regex pattern to match location information
 				// from the location setting, like:
 				// iPhone: 12.34,56.78
-				// ÜT: 12.34,56.78
+				// ÃœT: 12.34,56.78
 				// 12.34,56.78
 
 				Pattern pattern = Pattern
@@ -166,9 +171,42 @@ public class Json extends DataHandler {
 		return ma;
 	}
 
+	public Marker processARouteJSONObject(JSONObject jo, DataSource datasource) throws JSONException
+	{
+		Marker ma = null;
+		
+		Log.v(MixView.TAG, "Attempting to process ARoute JSON object.");
+
+		if (jo.has("title") && jo.has("lat") && jo.has("lng") && jo.has("elevation") && jo.has("routes")) 
+		{
+			Log.v(MixView.TAG, "processing ARoute JSON object.");
+			
+			JSONArray routes = jo.getJSONArray("routes");
+			ArrayList<Route> stopRoutes = new ArrayList<Route>(); 
+			
+			for(int i = 0; i < routes.length(); i++)
+			{
+				JSONObject route = routes.getJSONObject(i);
+				stopRoutes.add(new Route(route.getString("id"), route.getString("name")));
+			}
+			
+			ma = new BusStopMarker(
+					unescapeHTML(jo.getString("title"), 0), 
+					jo.getDouble("lat"), 
+					jo.getDouble("lng"), 
+					jo.getDouble("elevation"), 
+					stopRoutes.toArray(new Route[0]), 
+					datasource);
+		}
+		
+		return ma;
+	}
+	
 	public Marker processWikipediaJSONObject(JSONObject jo, DataSource datasource)
 			throws JSONException {
 
+		Log.v(MixView.TAG, "processing Wikipedia JSON object");
+		
 		Marker ma = null;
 		if (jo.has("title") && jo.has("lat") && jo.has("lng")
 				&& jo.has("elevation") && jo.has("wikipediaUrl")) {
@@ -193,41 +231,41 @@ public class Json extends DataHandler {
 		htmlEntities.put("&gt;", ">");
 		htmlEntities.put("&amp;", "&");
 		htmlEntities.put("&quot;", "\"");
-		htmlEntities.put("&agrave;", "à");
-		htmlEntities.put("&Agrave;", "À");
-		htmlEntities.put("&acirc;", "â");
-		htmlEntities.put("&auml;", "ä");
-		htmlEntities.put("&Auml;", "Ä");
-		htmlEntities.put("&Acirc;", "Â");
-		htmlEntities.put("&aring;", "å");
-		htmlEntities.put("&Aring;", "Å");
-		htmlEntities.put("&aelig;", "æ");
-		htmlEntities.put("&AElig;", "Æ");
-		htmlEntities.put("&ccedil;", "ç");
-		htmlEntities.put("&Ccedil;", "Ç");
-		htmlEntities.put("&eacute;", "é");
-		htmlEntities.put("&Eacute;", "É");
-		htmlEntities.put("&egrave;", "è");
-		htmlEntities.put("&Egrave;", "È");
-		htmlEntities.put("&ecirc;", "ê");
-		htmlEntities.put("&Ecirc;", "Ê");
-		htmlEntities.put("&euml;", "ë");
-		htmlEntities.put("&Euml;", "Ë");
-		htmlEntities.put("&iuml;", "ï");
-		htmlEntities.put("&Iuml;", "Ï");
-		htmlEntities.put("&ocirc;", "ô");
-		htmlEntities.put("&Ocirc;", "Ô");
-		htmlEntities.put("&ouml;", "ö");
-		htmlEntities.put("&Ouml;", "Ö");
-		htmlEntities.put("&oslash;", "ø");
-		htmlEntities.put("&Oslash;", "Ø");
-		htmlEntities.put("&szlig;", "ß");
-		htmlEntities.put("&ugrave;", "ù");
-		htmlEntities.put("&Ugrave;", "Ù");
-		htmlEntities.put("&ucirc;", "û");
-		htmlEntities.put("&Ucirc;", "Û");
-		htmlEntities.put("&uuml;", "ü");
-		htmlEntities.put("&Uuml;", "Ü");
+		htmlEntities.put("&agrave;", "Ã ");
+		htmlEntities.put("&Agrave;", "Ã€");
+		htmlEntities.put("&acirc;", "Ã¢");
+		htmlEntities.put("&auml;", "Ã¤");
+		htmlEntities.put("&Auml;", "Ã„");
+		htmlEntities.put("&Acirc;", "Ã‚");
+		htmlEntities.put("&aring;", "Ã¥");
+		htmlEntities.put("&Aring;", "Ã…");
+		htmlEntities.put("&aelig;", "Ã¦");
+		htmlEntities.put("&AElig;", "Ã†");
+		htmlEntities.put("&ccedil;", "Ã§");
+		htmlEntities.put("&Ccedil;", "Ã‡");
+		htmlEntities.put("&eacute;", "Ã©");
+		htmlEntities.put("&Eacute;", "Ã‰");
+		htmlEntities.put("&egrave;", "Ã¨");
+		htmlEntities.put("&Egrave;", "Ãˆ");
+		htmlEntities.put("&ecirc;", "Ãª");
+		htmlEntities.put("&Ecirc;", "ÃŠ");
+		htmlEntities.put("&euml;", "Ã«");
+		htmlEntities.put("&Euml;", "Ã‹");
+		htmlEntities.put("&iuml;", "Ã¯");
+		htmlEntities.put("&Iuml;", "Ã�");
+		htmlEntities.put("&ocirc;", "Ã´");
+		htmlEntities.put("&Ocirc;", "Ã”");
+		htmlEntities.put("&ouml;", "Ã¶");
+		htmlEntities.put("&Ouml;", "Ã–");
+		htmlEntities.put("&oslash;", "Ã¸");
+		htmlEntities.put("&Oslash;", "Ã˜");
+		htmlEntities.put("&szlig;", "ÃŸ");
+		htmlEntities.put("&ugrave;", "Ã¹");
+		htmlEntities.put("&Ugrave;", "Ã™");
+		htmlEntities.put("&ucirc;", "Ã»");
+		htmlEntities.put("&Ucirc;", "Ã›");
+		htmlEntities.put("&uuml;", "Ã¼");
+		htmlEntities.put("&Uuml;", "Ãœ");
 		htmlEntities.put("&nbsp;", " ");
 		htmlEntities.put("&copy;", "\u00a9");
 		htmlEntities.put("&reg;", "\u00ae");

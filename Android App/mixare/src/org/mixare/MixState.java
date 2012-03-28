@@ -50,6 +50,20 @@ public class MixState {
 		} 
 		return true;
 	}
+	
+	public boolean handleEvent(MixContext ctx, String event, Object data)
+	{
+		if(event.startsWith(BusStopMarker.ON_CLICK))
+		{
+			this.detailsView = true;
+			String title = event.split(":")[1];
+			BusStopMarker.Route[] routes = (BusStopMarker.Route[])data;
+			
+			ctx.loadStopDetailsDialog(title, routes);
+		}
+		
+		return true;
+	}
 
 	public float getCurBearing() {
 		return curBearing;

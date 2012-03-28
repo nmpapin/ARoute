@@ -175,7 +175,7 @@ abstract public class Marker implements Comparable<Marker> {
 //		cCMarker(origin, viewCam, 0, 0);
 //	}
 
-	private boolean isClickValid(float x, float y) {
+	protected boolean isClickValid(float x, float y) {
 		float currentAngle = MixUtils.getAngle(cMarker.x, cMarker.y,
 				signMarker.x, signMarker.y);
 		//if the marker is not active (i.e. not shown in AR view) we don't have to check it for clicks
