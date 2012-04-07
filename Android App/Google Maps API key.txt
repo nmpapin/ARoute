@@ -13,3 +13,4 @@ sample xml:
                  />
 
 test2
+test3
