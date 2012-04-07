@@ -12,4 +12,9 @@ sample xml:
                  android:apiKey="0SlrIu4W1uQlgMkX9Aic9hWxgsNFAxW-9MKo3lA"
                  />
 
-test21
+<<<<<<< HEAD
+test211
+=======
+test2
+test3
+>>>>>>> c51d4784db8d351f27e55a3e027b985cdfc834c9
