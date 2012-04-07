@@ -1,6 +1,7 @@
 <?php
 	require_once 'db_helper.php';
 	require_once 'mixare_tools.php';
+	require_once 'common.php';
 	
 	if(!isset($_GET['latitude']) or !isset($_GET['longitude']))
 	{
@@ -31,25 +32,28 @@
 		"SELECT *, (3959 * 1.609344 * ACOS(COS(RADIANS($lat)) * COS( RADIANS(latitude)) * COS(RADIANS(longitude) - RADIANS($long)) + SIN(RADIANS($lat)) * SIN(RADIANS(latitude)))) AS distance 
 		FROM stop
 		HAVING distance < $maxD 
-		ORDER BY distance ASC 
-		LIMIT 0 , $limit;"
+		ORDER BY distance ASC;"
 	);
 
+	$final_stops = array();
 	for($i = 0; $i < count($stops); $i++)
-	{
-		$routes = $database->getResults
-		(
-			"SELECT DISTINCT r.marta_id AS id, r.route_name AS name
-			FROM route AS r INNER JOIN route_variation AS rv ON r.id = rv.route_id
-			INNER JOIN route_stop AS rs ON rv.id = rs.route_var_id
-			WHERE rs.stop_id = '" . $stops[$i]['id'] . "';"
-		);
+	{	
+		$routes = getStopRouteVariations($database, $stops[$i]['id']);
 		
-		$stops[$i]['routes'] = $routes;
+		if(count($routes) > 0)
+		{
+			$stops[$i]['routes'] = $routes;
+			array_push($final_stops, $stops[$i]);
+			$limit--;
+			
+			if($limit <= 0)
+				break;
+		}
 	}
 	
-	$ret = makeMixareDataWithResults($stops, array
+	$ret = makeMixareDataWithResults($final_stops, array
 	(
+		'stop_id' => 'id', 
 		'lat' => 'latitude',
 		'lng' => 'longitude',
 		'title' => 'name',
