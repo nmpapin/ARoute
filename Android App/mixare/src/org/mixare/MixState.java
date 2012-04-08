@@ -53,13 +53,13 @@ public class MixState {
 	
 	public boolean handleEvent(MixContext ctx, String event, Object data)
 	{
-		if(event.startsWith(BusStopMarker.ON_CLICK))
+		if(event.equals(BusStopMarker.StopDetails))
 		{
 			this.detailsView = true;
-			String title = event.split(":")[1];
-			BusStopMarker.Route[] routes = (BusStopMarker.Route[])data;
+			BusStopMarker stop = (BusStopMarker)data;
+			String title = stop.getTitle();
 			
-			ctx.loadStopDetailsDialog(title, routes);
+			ctx.loadStopDetailsDialog(title, stop);
 		}
 		
 		return true;
