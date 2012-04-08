@@ -117,10 +117,10 @@ public class StopTimesTask extends AsyncTask<List, Void, Void>
 		return null;
 	}
 	
-	protected void onPostExecute(Long result) 
+	protected void onPostExecute(Void result) 
 	{
         mAdapter.notifyDataSetChanged();
-        mAdapter.notifyDataSetInvalidated();
+        //mAdapter.notifyDataSetInvalidated();
     }
 	
 	public void updateFailure(List<List<Map<String, ?>>> childData)
