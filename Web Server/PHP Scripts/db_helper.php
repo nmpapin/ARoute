@@ -34,7 +34,7 @@
 			$dbResults = mysql_query($dbQuery);
 			if(!$dbResults)
 			{
-				die(mysql_error());
+				die("Error: " . mysql_error() . "<br/>Query: " . $dbQuery);
 			}
 			
 			// Test for results.
@@ -62,7 +62,7 @@
 	
 			if(!$dbResults)
 			{
-				die(mysql_error());
+				die("Error: " . mysql_error() . "<br/>Query: " . $dbQuery);
 			}
 		
 			if(mysql_num_rows($dbResults) > 0)
@@ -85,7 +85,7 @@
 			}
 			else
 			{
-				die(mysql_error());
+				die("Error: " . mysql_error() . "<br/>Query: " . $dbQuery);
 			}
 		}
 		
@@ -99,7 +99,7 @@
 			}
 			else
 			{
-				die(mysql_error());
+				die("Error: " . mysql_error() . "<br/>Query: " . $dbQuery);
 			}
 		}
 	}
