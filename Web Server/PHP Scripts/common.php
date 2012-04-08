@@ -41,7 +41,8 @@
 	{
 		$routes = $database->getResults
 		(
-			
+			"SELECT *
+			FROM route;"
 		);
 		
 		return $routes;
