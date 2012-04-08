@@ -143,7 +143,7 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 	public void doError(Exception ex1) {
 		if (!fError) {
 			fError = true;
-
+			
 			setErrorDialog();
 
 			ex1.printStackTrace();

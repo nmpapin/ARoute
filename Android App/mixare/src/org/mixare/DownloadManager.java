@@ -18,11 +18,24 @@
  */
 package org.mixare;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.X509TrustManager;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -34,6 +47,10 @@ import org.mixare.data.XMLHandler;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 
 /**
@@ -275,7 +292,7 @@ public class DownloadManager implements Runnable {
 	}
 	public Boolean isDone() {
 		return todoList.isEmpty();
-	}
+	}	
 }
 
 class DownloadRequest {

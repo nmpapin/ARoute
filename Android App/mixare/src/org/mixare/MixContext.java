@@ -488,7 +488,7 @@ public class MixContext extends ContextWrapper {
 		
 		d.show();
 		
-		new StopTimesTask(adapter, stop, this).execute(groupMaps, childMaps);
+		new StopTimesTask(adapter, stop).execute(groupMaps, childMaps);
 	}
 	
 	public void loadMixViewWebPage(String url) throws Exception {

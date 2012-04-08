@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14dp"
-            android:text="Departing at " />
+            android:text="Departing At: " />
 
         <TextView
             android:id="@+id/routeVariationTimes"

@@ -64,9 +64,7 @@ public class BusStopMarker extends Marker {
 	}
 	
 	@Override
-	public boolean fClick(float x, float y, MixContext ctx, MixState state) {
-		Log.i(MixView.TAG, "Marker clicked");
-		
+	public boolean fClick(float x, float y, MixContext ctx, MixState state) {		
 		boolean evtHandled = false;
 
 		if (isClickValid(x, y)) 
