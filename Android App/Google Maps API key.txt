@@ -11,5 +11,3 @@ sample xml:
                  android:layout_height="fill_parent"
                  android:apiKey="0SlrIu4W1uQlgMkX9Aic9hWxgsNFAxW-9MKo3lA"
                  />
-
-test211
