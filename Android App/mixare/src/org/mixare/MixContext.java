@@ -470,7 +470,7 @@ public class MixContext extends ContextWrapper {
 					R.id.routeNumber,
 					R.id.routeName
 				},
-				dataMap,
+				childMaps,
 				R.layout.stopdetailsdialogroutevariation,
 				new String[]{
 					"direction",
