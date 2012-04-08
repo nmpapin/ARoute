@@ -37,6 +37,16 @@
 		return $res;
 	}
 	
+	function getMartaRoutes($database)
+	{
+		$routes = $database->getResults
+		(
+			
+		);
+		
+		return $routes;
+	}
+	
 	function getStopRoutes($database, $stop)
 	{
 		$routes = $database->getResults
