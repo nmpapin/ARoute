@@ -67,9 +67,14 @@ public class RouteActivity extends MapActivity {
 		// res/drawable directory
         HelloItemizedOverlay walkingoverlay = new HelloItemizedOverlay(walkingdrawable, this);
         
+        /* Star icons */
+        Drawable stardrawable = this.getResources().getDrawable(R.drawable.star);	// added bus.gif to
+		// res/drawable directory
+        HelloItemizedOverlay staroverlay = new HelloItemizedOverlay(walkingdrawable, this);
+        
         /* Create the Geopoint of the location you want to add, and add it to the overlay */
         //start walking
-        GeoPoint point = new GeoPoint((int) (bus1Lat * 1e6), (int) (bus1Lng*1e6)); //specified in microdegrees (lat, long)
+        GeoPoint point = new GeoPoint((int) (startLat * 1e6), (int) (startLng*1e6)); //specified in microdegrees (lat, long)
         OverlayItem overlayitem1 = new OverlayItem(point, "Walk to 10th St NW@Atlantic Dr NW Station", "0.7 miles: approximately 13 minutes");
         walkingoverlay.addOverlay(overlayitem1); //add point to overlay list
         
@@ -82,10 +87,10 @@ public class RouteActivity extends MapActivity {
         ArrayList<GeoPoint> points2 = (ArrayList<GeoPoint>) router.getRouteGeoPoints(bus1Lat, bus1Lng, bus2Lat, bus2Lng, "driving");
         
         RouteOverlay BusToBus = new RouteOverlay(mapView, Color.GREEN, points2);
-        mapOverlays.add(walkToBus);
+        mapOverlays.add(BusToBus);
         
         //exit bus route
-        point = new GeoPoint((int) (bus1Lat * 1e6), (int) (bus1Lng*1e6)); //specified in microdegrees (lat, long)
+        point = new GeoPoint((int) (bus2Lat * 1e6), (int) (bus2Lng*1e6)); //specified in microdegrees (lat, long)
         OverlayItem overlayitem3 = new OverlayItem(point, "6:41am:	Arrive Howell Mill Rd NW@Bellemeade Ave NW", "Walk to destination - 0.2 miles: approximately 4 minutes");
         walkingoverlay.addOverlay(overlayitem3); //add point to overlay list
         
@@ -94,6 +99,11 @@ public class RouteActivity extends MapActivity {
         
         RouteOverlay walkToDest = new RouteOverlay(mapView, Color.GREEN, points3);
         mapOverlays.add(walkToDest);
+        
+        //exit bus route
+        point = new GeoPoint((int) (destLat * 1e6), (int) (destLng*1e6)); //specified in microdegrees (lat, long)
+        OverlayItem overlayitem4 = new OverlayItem(point, "6:45am:	Arrive 1715 Howell Mill Road Northwest, Atlanta, GA 30318", "Travel Time: 29 minutes");
+        staroverlay.addOverlay(overlayitem4); //add point to overlay list
         
         //Add all itemized overlays
         mapOverlays.add(busoverlay); //add overlay to mapview
