@@ -80,7 +80,7 @@ public class RouteActivity extends MapActivity {
         
         //enter bus route
         point = new GeoPoint((int) (bus1Lat * 1e6), (int) (bus1Lng*1e6)); //specified in microdegrees (lat, long)
-        OverlayItem overlayitem2 = new OverlayItem(point, "Depart 10th St NW@Atlantic Dr NW Station", "6:28am: Howell Mill Rd/Cumberland - Direction: 12 Cumberland Via Northside");
+        OverlayItem overlayitem2 = new OverlayItem(point, "Depart 10th St NW@Atlantic Dr NW Station", "7:05am: Howell Mill Rd/Cumberland - Direction: 12 Cumberland Via Northside");
         busoverlay.addOverlay(overlayitem2); //add point to overlay list
         
         //Leg2************************************
@@ -93,7 +93,7 @@ public class RouteActivity extends MapActivity {
         
         //exit bus route
         point = new GeoPoint((int) (bus2Lat * 1e6), (int) (bus2Lng*1e6)); //specified in microdegrees (lat, long)
-        OverlayItem overlayitem3 = new OverlayItem(point, "6:41am:	Arrive Howell Mill Rd NW@Bellemeade Ave NW", "Walk to destination - 0.2 miles: approximately 4 minutes");
+        OverlayItem overlayitem3 = new OverlayItem(point, "7:29am:	Arrive Howell Mill Rd NW@Bellemeade Ave NW", "Walk to destination - 0.2 miles: approximately 4 minutes");
         walkingoverlay.addOverlay(overlayitem3); //add point to overlay list
         
         //Leg3***********************************
@@ -104,7 +104,7 @@ public class RouteActivity extends MapActivity {
         
         //exit bus route
         point = new GeoPoint((int) (destLat * 1e6), (int) (destLng*1e6)); //specified in microdegrees (lat, long)
-        OverlayItem overlayitem4 = new OverlayItem(point, "6:45am:	Arrive 1715 Howell Mill Road Northwest, Atlanta, GA 30318", "Travel Time: 29 minutes");
+        OverlayItem overlayitem4 = new OverlayItem(point, "7:34am:	Arrive 1715 Howell Mill Road Northwest, Atlanta, GA 30318", "Travel Time: 29 minutes");
         staroverlay.addOverlay(overlayitem4); //add point to overlay list
         
         //Add all itemized overlays
