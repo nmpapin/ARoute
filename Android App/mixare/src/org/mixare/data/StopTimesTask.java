@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.client.methods.HttpGet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -98,6 +97,8 @@ public class StopTimesTask extends AsyncTask<List, Void, Void>
 			{
 				int key = kv.getKey();
 				List<Map<String, ?>> parentList = routeVarMapParents.get(key);
+				if(parentList.size() == 1)
+					break;
 				parentList.remove(kv.getValue());
 			}
 		} 
@@ -147,7 +148,7 @@ public class StopTimesTask extends AsyncTask<List, Void, Void>
 				sb.append(line + "\n");
 			}
 		} 
-		catch (IOException e) 
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		} 

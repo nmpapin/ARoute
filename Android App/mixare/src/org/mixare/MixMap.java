@@ -86,7 +86,7 @@ public class MixMap extends MapActivity implements OnTouchListener{
 		map = this;
 
 		setMapContext(this);
-		mapView= new MapView(this, "0bynx7meN9jlSdHQ4-lK_Vzsw-T82UVibnI0nCA");
+		mapView= new MapView(this, "0SlrIu4W1uQlgMkX9Aic9hWxgsNFAxW-9MKo3lA");
 		mapView.setBuiltInZoomControls(true);
 		mapView.setClickable(true);
 		mapView.setSatellite(true);

@@ -69,6 +69,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebView;
@@ -454,6 +455,21 @@ public class MixContext extends ContextWrapper {
 		titleView.setText(title);
 		
 		ExpandableListView list = (ExpandableListView)d.findViewById(R.id.stopDetailDialogRouteList);
+		
+		final Button button = (Button)d.findViewById(R.id.stopWalkRouteButton);
+		final Location end = new Location("Marker");
+		final double longitude = stop.getLongitude();
+		final double latitude = stop.getLatitude();
+		
+		final Location start = this.getCurrentLocation();
+		
+        button.setOnClickListener(new View.OnClickListener() 
+        {
+            public void onClick(View v) 
+            {
+                
+            }
+        });
 		
 		List<Map<String, ?>> groupMaps = stop.getRouteList();
 		List<List<Map<String, ?>>> childMaps = stop.getRouteSubdataList();
