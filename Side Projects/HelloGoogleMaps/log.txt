@@ -1,7 +1,19 @@
-04-08 23:51:06.762: E/AndroidRuntime(472): Caused by: java.lang.NullPointerException
-04-08 23:51:06.762: E/AndroidRuntime(472): 	at my.maps.org.RouteOverlay.repopulateSegments(RouteOverlay.java:73)
-04-08 23:51:06.762: E/AndroidRuntime(472): 	at my.maps.org.RouteOverlay.<init>(RouteOverlay.java:46)
-04-08 23:51:06.762: E/AndroidRuntime(472): 	at my.maps.org.HelloGoogleMapsActivity.onCreate(HelloGoogleMapsActivity.java:43)
-04-08 23:51:06.762: E/AndroidRuntime(472): 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1047)
-04-08 23:51:06.762: E/AndroidRuntime(472): 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:1611)
-04-08 23:51:06.762: E/AndroidRuntime(472): 	... 11 more
+04-09 01:24:57.752: E/AndroidRuntime(812): FATAL EXCEPTION: main
+04-09 01:24:57.752: E/AndroidRuntime(812): java.lang.RuntimeException: Unable to start activity ComponentInfo{my.maps.org/my.maps.org.HelloGoogleMapsActivity}: java.lang.NullPointerException
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:1647)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:1663)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at android.app.ActivityThread.access$1500(ActivityThread.java:117)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:931)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at android.os.Handler.dispatchMessage(Handler.java:99)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at android.os.Looper.loop(Looper.java:130)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at android.app.ActivityThread.main(ActivityThread.java:3683)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at java.lang.reflect.Method.invokeNative(Native Method)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at java.lang.reflect.Method.invoke(Method.java:507)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:839)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:597)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at dalvik.system.NativeStart.main(Native Method)
+04-09 01:24:57.752: E/AndroidRuntime(812): Caused by: java.lang.NullPointerException
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at my.maps.org.HelloGoogleMapsActivity.onCreate(HelloGoogleMapsActivity.java:53)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1047)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:1611)
+04-09 01:24:57.752: E/AndroidRuntime(812): 	... 11 more
