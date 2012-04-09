@@ -70,7 +70,7 @@ public class RouteActivity extends MapActivity {
         /* Star icons */
         Drawable stardrawable = this.getResources().getDrawable(R.drawable.star);	// added bus.gif to
 		// res/drawable directory
-        HelloItemizedOverlay staroverlay = new HelloItemizedOverlay(walkingdrawable, this);
+        HelloItemizedOverlay staroverlay = new HelloItemizedOverlay(stardrawable, this);
         
         /* Create the Geopoint of the location you want to add, and add it to the overlay */
         //start walking
