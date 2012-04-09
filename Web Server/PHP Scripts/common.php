@@ -186,4 +186,122 @@
 		
 		return $route_variations;
 	}
+	
+	function isStation($database, $stop)
+	{
+		$stop = mysql_real_escape_string($_GET['stop']);
+	
+		$stop_data = $database->getResult
+		(
+			"SELECT count(DISTINCT rv.route_id) AS number
+			FROM routing_stop AS s
+			JOIN routing_route_stop AS rs ON s.id = rs.stop_id
+			JOIN routing_route_variation AS rv ON rs.route_var_id = rv.id
+			WHERE s.id = $stop;"
+		);
+		
+		return ($stop_data['number'] > 1);
+	}
+	
+	function getFollowingStopTimes($database, $stop, $route, $time)
+	{
+		$order = $database->getResult
+		(
+			"SELECT route_order
+			FROM routing_route_stop AS rs
+			JOIN routing_stop AS s ON rs.stop_id = s.id
+			WHERE s.id = $stop
+			AND rs.route_var_id = $route;"
+		);
+		
+		if($order == null)
+		{
+			echo json_encode(array());
+			die();
+		}
+		
+		$order = $order['route_order'];
+		
+		$stops = $database->getResults
+		(
+			"SELECT id, stop_id
+			FROM routing_route_stop
+			WHERE route_order >= $order
+			AND route_var_id = $route
+			ORDER BY route_order ASC;"
+		);
+		
+		$start = $stops[0];
+		unset($stops[0]);
+		
+		$start_time = $database->getResult
+		(
+			"SELECT stop_time
+			FROM routing_route_time
+			WHERE route_stop_id = ".$start['id']." 
+			AND stop_time >= '$time'
+			ORDER BY stop_time ASC
+			LIMIT 1;"
+		);
+		
+		if($start_time == null)
+		{
+			$start_time = $database->getResult
+			(
+				"SELECT stop_time
+				FROM routing_route_time
+				WHERE route_stop_id = ".$start['id']." 
+				AND stop_time >= '00:00:00'
+				ORDER BY stop_time ASC
+				LIMIT 1;"
+			);
+		
+			if($start_time == null)
+			{
+				echo json_encode(array());
+				die();
+			}
+		}
+		
+		$time = $start_time['stop_time'];
+		
+		$ret_times = array();
+		foreach($stops AS $key=>$stop)
+		{
+			$start_time = $database->getResult
+			(
+				"SELECT stop_time
+				FROM routing_route_time
+				WHERE route_stop_id = ".$stop['id']." 
+				AND stop_time > '$time'
+				ORDER BY stop_time ASC
+				LIMIT 1;"
+			);
+			
+			if($start_time == null)
+			{
+				$start_time = $database->getResult
+				(
+					"SELECT stop_time
+					FROM routing_route_time
+					WHERE route_stop_id = ".$stop['id']." 
+					AND stop_time >= '00:00:00'
+					ORDER BY stop_time ASC
+					LIMIT 1;"
+				);
+			
+				if($start_time == null)
+				{
+					echo json_encode(array());
+					die();
+				}
+			}
+			
+			$time = $start_time['stop_time'];
+			$stops[$key]['time'] = $time;
+			unset($stops[$key]['id']);
+		}
+		
+		return array_values($stops);
+	}
 ?>

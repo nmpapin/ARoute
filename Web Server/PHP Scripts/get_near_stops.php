@@ -5,7 +5,7 @@
 	
 	if(!isset($_GET['latitude']) or !isset($_GET['longitude']))
 	{
-		die("Expected post data of 'latitude' and 'longitude'.");
+		die("Expected get data of 'latitude' and 'longitude'.");
 	}
 	
 	$database = new Database();
