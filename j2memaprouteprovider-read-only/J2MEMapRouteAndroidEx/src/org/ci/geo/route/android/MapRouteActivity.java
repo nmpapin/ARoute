@@ -45,7 +45,7 @@ public class MapRouteActivity extends MapActivity {
 		new Thread() {
 			@Override
 			public void run() {
-				double fromLat = 49.85, fromLon = 24.016667, toLat = 50.45, toLon = 30.523333;
+				double fromLat = 33.790169, fromLon = -84.3881, toLat = 33.775522, toLon = -84.39635;
 				String url = RoadProvider
 						.getUrl(fromLat, fromLon, toLat, toLon);
 				InputStream is = getConnection(url);
