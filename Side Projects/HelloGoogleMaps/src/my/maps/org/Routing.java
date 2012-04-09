@@ -171,8 +171,6 @@ public class Routing
 	
 	public JSONObject getJSONResults(String url) throws JSONException
 	{
-		//return new JSONObject(getHTTPResponse(url)); //old version
-		
 		try 
 		{
 			URL updateURL = new URL(url);
@@ -229,110 +227,8 @@ public class Routing
 		return sb.toString();
 	}
 	
-	//Decided to skip using http client and replace with simply url connection
-	/*
-	public String getHTTPResponse(String url)
-	{
-		final AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
-	    final HttpGet getRequest = new HttpGet(url);
-
-	    try {
-	        HttpResponse response = client.execute(getRequest);
-	        final int statusCode = response.getStatusLine().getStatusCode();
-	        if (statusCode != HttpStatus.SC_OK) { 
-	            Log.w("Routing Request", "Error " + statusCode + " while retrieving directions from " + url); 
-	            return null;
-	        }
-	        
-	        final HttpEntity entity = response.getEntity();
-	        if (entity != null) {
-	            InputStream inputStream = null;
-	            try {
-	                inputStream = entity.getContent();
-	                
-	                return getHttpInputString(inputStream); //convert inputStream to string and return
-	            }
-	            finally {
-	                if (inputStream != null)
-	                {
-	                    inputStream.close();  
-	                }
-	                entity.consumeContent();
-	            }
-	        }
-	    } catch (Exception e) {
-	        // Could provide a more explicit error message for IOException or IllegalStateException
-	        getRequest.abort();
-	        Log.w("Routing request", "Error while retrieving directions from " + url);
-	    } finally {
-	        if (client != null) {
-	            client.close();
-	        }
-	    }
-	    return null;
-	}
-	
-	public String getHttpInputString(InputStream is) {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is), 8 * 1024);
-		StringBuilder sb = new StringBuilder();
-
-		try {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				sb.append(line + "\n");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		requestFinished = true; //delete later
-		return sb.toString();
-	} */
-	
-	// Doesn't work - delete later
-	/*
-	public ArrayList<GeoPoint> testGetGeopointsFromJSONFile(File f)
-	{
-		ArrayList<GeoPoint> geopoints = null;
-		
-		try
-		// JSON processing
-		{
-			// initial query
-			JSONObject results = new JSONObject(getHttpInputString((InputStream) new FileInputStream(f)));
-
-			// routesArray contains ALL routes - we have chosen to use only one
-			JSONArray routesArray = results.getJSONArray("routes");
-			// Grab the first route
-			JSONObject route = routesArray.getJSONObject(0);
-			// Take all legs from the route
-			JSONArray legs = route.getJSONArray("legs");
-			// Grab steps (2nd element in legs array)
-			
-			JSONObject leg = legs.getJSONObject(0);
-			//JSONObject stepObject = legs.getJSONObject("steps");
-			JSONArray steps = leg.getJSONArray("steps");
-			//System.out.println(steps);
-			
-			geopoints = extractGeoPoints(steps);
-
-		} catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return geopoints;
-	}
-	*/
-	
-	public ArrayList<GeoPoint> getCustomQueryPoints(String url)
+	public ArrayList<GeoPoint> getRouteWithWaypoints(double fromLat, double fromLong,
+			double toLat, double toLong, String mode, String[] waypoints)
 	{
 		ArrayList<GeoPoint> geopoints = null;
 
@@ -342,6 +238,17 @@ public class Routing
 		try
 		// JSON processing
 		{
+			String url = getRoutingURL(fromLat, fromLong, toLat, toLong, mode);
+			
+			StringBuilder waybuilder = new StringBuilder("&waypoints=");
+			for(int i = 0; i<waypoints.length-1; i++)
+			{
+				waybuilder.append(waypoints[i]+"|");
+			}
+			waybuilder.append(waypoints[waypoints.length-1]);
+			
+			url += waybuilder.toString();
+			
 			// initial query
 			JSONObject results = getJSONResults(url);
 

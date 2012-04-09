@@ -84,7 +84,8 @@ public class RouteActivity extends MapActivity {
         busoverlay.addOverlay(overlayitem2); //add point to overlay list
         
         //Leg2************************************
-        ArrayList<GeoPoint> points2 = (ArrayList<GeoPoint>) router.getRouteGeoPoints(bus1Lat, bus1Lng, bus2Lat, bus2Lng, "driving");
+        String[] waypoints = {"33.781502,-84.41328", "33.782928,-84.413538", "33.783856,-84.412079", "33.790347,-84.411821", "33.79641,-84.415941"};
+        ArrayList<GeoPoint> points2 = (ArrayList<GeoPoint>) router.getRouteWithWaypoints(bus1Lat, bus1Lng, bus2Lat, bus2Lng, "driving", waypoints);
         
         RouteOverlay BusToBus = new RouteOverlay(mapView, Color.GREEN, points2);
         mapOverlays.add(BusToBus);
