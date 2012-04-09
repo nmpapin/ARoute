@@ -1,0 +1,273 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  Internal Error (classFileParser.cpp:3494), pid=4591, tid=139773676803840
+#  Error: ShouldNotReachHere()
+#
+# JRE version: 6.0_23-b23
+# Java VM: OpenJDK 64-Bit Server VM (20.0-b11 mixed mode linux-amd64 compressed oops)
+# Derivative: IcedTea6 1.11pre
+# Distribution: Ubuntu 11.10, package 6b23~pre11-0ubuntu1.11.10.2
+# If you would like to submit a bug report, please include
+# instructions how to reproduce the bug and visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-6/
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000000000e5c800):  JavaThread "Unknown thread" [_thread_in_vm, id=4596, stack(0x00007f1f984ad000,0x00007f1f985ae000)]
+
+Stack: [0x00007f1f984ad000,0x00007f1f985ae000],  sp=0x00007f1f985ac060,  free space=1020k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [libjvm.so+0x783225]  VMError::report(outputStream*)+0x1255
+V  [libjvm.so+0x7834a9]  VMError::report_and_die()+0x169
+V  [libjvm.so+0x3bb13a]  report_vm_error(char const*, int, char const*, char const*)+0x4a
+V  [libjvm.so+0x351515]  ClassFileParser::parseClassFile(symbolHandle, Handle, Handle, KlassHandle, GrowableArray<Handle>*, symbolHandle&, bool, Thread*)+0x1545
+V  [libjvm.so+0x355773]  ClassLoader::load_classfile(symbolHandle, Thread*)+0x1f3
+V  [libjvm.so+0x71b564]  SystemDictionary::load_instance_class(symbolHandle, Handle, Thread*)+0x354
+V  [libjvm.so+0x719c70]  SystemDictionary::resolve_instance_class_or_null(symbolHandle, Handle, Handle, Thread*)+0x7c0
+V  [libjvm.so+0x71bbf3]  SystemDictionary::resolve_or_fail(symbolHandle, Handle, Handle, bool, Thread*)+0x33
+V  [libjvm.so+0x71bcd4]  SystemDictionary::resolve_or_fail(symbolHandle, bool, Thread*)+0x14
+V  [libjvm.so+0x71bd80]  SystemDictionary::initialize_wk_klass(SystemDictionary::WKID, int, Thread*)+0xa0
+V  [libjvm.so+0x71bde9]  SystemDictionary::initialize_wk_klasses_until(SystemDictionary::WKID, SystemDictionary::WKID&, Thread*)+0x59
+V  [libjvm.so+0x71bee1]  SystemDictionary::initialize_preloaded_classes(Thread*)+0x71
+V  [libjvm.so+0x75f65f]  Universe::genesis(Thread*)+0x11f
+V  [libjvm.so+0x76000f]  universe2_init()+0x1f
+V  [libjvm.so+0x473ea5]  init_globals()+0x95
+V  [libjvm.so+0x749f9a]  Threads::create_vm(JavaVMInitArgs*, bool*)+0x1ea
+V  [libjvm.so+0x4cdb51]  JNI_CreateJavaVM+0x61
+C  [java+0x315e]  JavaMain+0x7e
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+
+Other Threads:
+
+=>0x0000000000e5c800 (exited) JavaThread "Unknown thread" [_thread_in_vm, id=4596, stack(0x00007f1f984ad000,0x00007f1f985ae000)]
+
+VM state:not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Dynamic libraries:
+00400000-00409000 r-xp 00000000 08:05 3540098                            /usr/lib/jvm/java-6-openjdk/jre/bin/java
+00608000-00609000 r--p 00008000 08:05 3540098                            /usr/lib/jvm/java-6-openjdk/jre/bin/java
+00609000-0060a000 rw-p 00009000 08:05 3540098                            /usr/lib/jvm/java-6-openjdk/jre/bin/java
+00e52000-00eef000 rw-p 00000000 00:00 0                                  [heap]
+779600000-77aac0000 rw-p 00000000 00:00 0 
+77aac0000-783c00000 rw-p 00000000 00:00 0 
+783c00000-788ee0000 rw-p 00000000 00:00 0 
+788ee0000-7d6960000 rw-p 00000000 00:00 0 
+7d6960000-7d92c0000 rw-p 00000000 00:00 0 
+7d92c0000-800000000 rw-p 00000000 00:00 0 
+7f1f8c000000-7f1f8c021000 rw-p 00000000 00:00 0 
+7f1f8c021000-7f1f90000000 ---p 00000000 00:00 0 
+7f1f9141d000-7f1f91493000 r--s 00902000 08:02 139996                     /media/Windows/Users/sghuman/Android/SDK/android-sdk-linux/platforms/android-10/android.jar
+7f1f91493000-7f1f914bb000 rw-p 00000000 00:00 0 
+7f1f914bb000-7f1f914bc000 ---p 00000000 00:00 0 
+7f1f914bc000-7f1f915bc000 rw-p 00000000 00:00 0 
+7f1f915bc000-7f1f915bd000 ---p 00000000 00:00 0 
+7f1f915bd000-7f1f916bd000 rw-p 00000000 00:00 0 
+7f1f916bd000-7f1f916be000 ---p 00000000 00:00 0 
+7f1f916be000-7f1f917be000 rw-p 00000000 00:00 0 
+7f1f917be000-7f1f917bf000 ---p 00000000 00:00 0 
+7f1f917bf000-7f1f918bf000 rw-p 00000000 00:00 0 
+7f1f918bf000-7f1f918c0000 ---p 00000000 00:00 0 
+7f1f918c0000-7f1f919c0000 rw-p 00000000 00:00 0 
+7f1f919c0000-7f1f919c1000 ---p 00000000 00:00 0 
+7f1f919c1000-7f1f91ac1000 rw-p 00000000 00:00 0 
+7f1f91ac1000-7f1f91ac2000 ---p 00000000 00:00 0 
+7f1f91ac2000-7f1f91bc2000 rw-p 00000000 00:00 0 
+7f1f91bc2000-7f1f91bc3000 ---p 00000000 00:00 0 
+7f1f91bc3000-7f1f91cce000 rw-p 00000000 00:00 0 
+7f1f91cce000-7f1f91d16000 rw-p 00000000 00:00 0 
+7f1f91d16000-7f1f91d40000 rw-p 00000000 00:00 0 
+7f1f91d40000-7f1f91fad000 rw-p 00000000 00:00 0 
+7f1f91fad000-7f1f91fb8000 rw-p 00000000 00:00 0 
+7f1f91fb8000-7f1f92000000 rw-p 00000000 00:00 0 
+7f1f92000000-7f1f9202a000 rw-p 00000000 00:00 0 
+7f1f9202a000-7f1f92296000 rw-p 00000000 00:00 0 
+7f1f92296000-7f1f922ac000 rw-p 00000000 00:00 0 
+7f1f922ac000-7f1f923e2000 rw-p 00000000 00:00 0 
+7f1f923e2000-7f1f923e3000 rw-p 00000000 00:00 0 
+7f1f923e3000-7f1f92653000 rwxp 00000000 00:00 0 
+7f1f92653000-7f1f953e3000 rw-p 00000000 00:00 0 
+7f1f953e3000-7f1f953ea000 r-xp 00000000 08:05 3559425                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/libzip.so
+7f1f953ea000-7f1f955e9000 ---p 00007000 08:05 3559425                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/libzip.so
+7f1f955e9000-7f1f955ea000 r--p 00006000 08:05 3559425                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/libzip.so
+7f1f955ea000-7f1f955eb000 rw-p 00007000 08:05 3559425                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/libzip.so
+7f1f955eb000-7f1f955f7000 r-xp 00000000 08:05 1966232                    /lib/x86_64-linux-gnu/libnss_files-2.13.so
+7f1f955f7000-7f1f957f6000 ---p 0000c000 08:05 1966232                    /lib/x86_64-linux-gnu/libnss_files-2.13.so
+7f1f957f6000-7f1f957f7000 r--p 0000b000 08:05 1966232                    /lib/x86_64-linux-gnu/libnss_files-2.13.so
+7f1f957f7000-7f1f957f8000 rw-p 0000c000 08:05 1966232                    /lib/x86_64-linux-gnu/libnss_files-2.13.so
+7f1f957f8000-7f1f95802000 r-xp 00000000 08:05 1966234                    /lib/x86_64-linux-gnu/libnss_nis-2.13.so
+7f1f95802000-7f1f95a02000 ---p 0000a000 08:05 1966234                    /lib/x86_64-linux-gnu/libnss_nis-2.13.so
+7f1f95a02000-7f1f95a03000 r--p 0000a000 08:05 1966234                    /lib/x86_64-linux-gnu/libnss_nis-2.13.so
+7f1f95a03000-7f1f95a04000 rw-p 0000b000 08:05 1966234                    /lib/x86_64-linux-gnu/libnss_nis-2.13.so
+7f1f95a04000-7f1f95a1b000 r-xp 00000000 08:05 1966229                    /lib/x86_64-linux-gnu/libnsl-2.13.so
+7f1f95a1b000-7f1f95c1a000 ---p 00017000 08:05 1966229                    /lib/x86_64-linux-gnu/libnsl-2.13.so
+7f1f95c1a000-7f1f95c1b000 r--p 00016000 08:05 1966229                    /lib/x86_64-linux-gnu/libnsl-2.13.so
+7f1f95c1b000-7f1f95c1c000 rw-p 00017000 08:05 1966229                    /lib/x86_64-linux-gnu/libnsl-2.13.so
+7f1f95c1c000-7f1f95c1e000 rw-p 00000000 00:00 0 
+7f1f95c1e000-7f1f95c26000 r-xp 00000000 08:05 1966230                    /lib/x86_64-linux-gnu/libnss_compat-2.13.so
+7f1f95c26000-7f1f95e25000 ---p 00008000 08:05 1966230                    /lib/x86_64-linux-gnu/libnss_compat-2.13.so
+7f1f95e25000-7f1f95e26000 r--p 00007000 08:05 1966230                    /lib/x86_64-linux-gnu/libnss_compat-2.13.so
+7f1f95e26000-7f1f95e27000 rw-p 00008000 08:05 1966230                    /lib/x86_64-linux-gnu/libnss_compat-2.13.so
+7f1f95e27000-7f1f95e53000 r-xp 00000000 08:05 3559424                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/libjava.so
+7f1f95e53000-7f1f96052000 ---p 0002c000 08:05 3559424                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/libjava.so
+7f1f96052000-7f1f96053000 r--p 0002b000 08:05 3559424                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/libjava.so
+7f1f96053000-7f1f96056000 rw-p 0002c000 08:05 3559424                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/libjava.so
+7f1f96056000-7f1f96064000 r-xp 00000000 08:05 3559410                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/libverify.so
+7f1f96064000-7f1f96263000 ---p 0000e000 08:05 3559410                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/libverify.so
+7f1f96263000-7f1f96265000 r--p 0000d000 08:05 3559410                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/libverify.so
+7f1f96265000-7f1f96266000 rw-p 0000f000 08:05 3559410                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/libverify.so
+7f1f96266000-7f1f9626d000 r-xp 00000000 08:05 1969963                    /lib/x86_64-linux-gnu/librt-2.13.so
+7f1f9626d000-7f1f9646c000 ---p 00007000 08:05 1969963                    /lib/x86_64-linux-gnu/librt-2.13.so
+7f1f9646c000-7f1f9646d000 r--p 00006000 08:05 1969963                    /lib/x86_64-linux-gnu/librt-2.13.so
+7f1f9646d000-7f1f9646e000 rw-p 00007000 08:05 1969963                    /lib/x86_64-linux-gnu/librt-2.13.so
+7f1f9646e000-7f1f96483000 r-xp 00000000 08:05 1970042                    /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f1f96483000-7f1f96682000 ---p 00015000 08:05 1970042                    /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f1f96682000-7f1f96683000 r--p 00014000 08:05 1970042                    /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f1f96683000-7f1f96684000 rw-p 00015000 08:05 1970042                    /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f1f96684000-7f1f96707000 r-xp 00000000 08:05 1966227                    /lib/x86_64-linux-gnu/libm-2.13.so
+7f1f96707000-7f1f96906000 ---p 00083000 08:05 1966227                    /lib/x86_64-linux-gnu/libm-2.13.so
+7f1f96906000-7f1f96907000 r--p 00082000 08:05 1966227                    /lib/x86_64-linux-gnu/libm-2.13.so
+7f1f96907000-7f1f96908000 rw-p 00083000 08:05 1966227                    /lib/x86_64-linux-gnu/libm-2.13.so
+7f1f96908000-7f1f969f0000 r-xp 00000000 08:05 3547390                    /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.16
+7f1f969f0000-7f1f96bf0000 ---p 000e8000 08:05 3547390                    /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.16
+7f1f96bf0000-7f1f96bf8000 r--p 000e8000 08:05 3547390                    /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.16
+7f1f96bf8000-7f1f96bfa000 rw-p 000f0000 08:05 3547390                    /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.16
+7f1f96bfa000-7f1f96c0f000 rw-p 00000000 00:00 0 
+7f1f96c0f000-7f1f97512000 r-xp 00000000 08:05 3559427                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/server/libjvm.so
+7f1f97512000-7f1f97711000 ---p 00903000 08:05 3559427                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/server/libjvm.so
+7f1f97711000-7f1f97792000 r--p 00902000 08:05 3559427                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/server/libjvm.so
+7f1f97792000-7f1f977ad000 rw-p 00983000 08:05 3559427                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/server/libjvm.so
+7f1f977ad000-7f1f977d6000 rw-p 00000000 00:00 0 
+7f1f977d6000-7f1f977ed000 r-xp 00000000 08:05 1970104                    /lib/x86_64-linux-gnu/libz.so.1.2.3.4
+7f1f977ed000-7f1f979ec000 ---p 00017000 08:05 1970104                    /lib/x86_64-linux-gnu/libz.so.1.2.3.4
+7f1f979ec000-7f1f979ed000 r--p 00016000 08:05 1970104                    /lib/x86_64-linux-gnu/libz.so.1.2.3.4
+7f1f979ed000-7f1f979ee000 rw-p 00017000 08:05 1970104                    /lib/x86_64-linux-gnu/libz.so.1.2.3.4
+7f1f979ee000-7f1f97b85000 r-xp 00000000 08:05 1966223                    /lib/x86_64-linux-gnu/libc-2.13.so
+7f1f97b85000-7f1f97d84000 ---p 00197000 08:05 1966223                    /lib/x86_64-linux-gnu/libc-2.13.so
+7f1f97d84000-7f1f97d88000 r--p 00196000 08:05 1966223                    /lib/x86_64-linux-gnu/libc-2.13.so
+7f1f97d88000-7f1f97d89000 rw-p 0019a000 08:05 1966223                    /lib/x86_64-linux-gnu/libc-2.13.so
+7f1f97d89000-7f1f97d8f000 rw-p 00000000 00:00 0 
+7f1f97d8f000-7f1f97d91000 r-xp 00000000 08:05 1966226                    /lib/x86_64-linux-gnu/libdl-2.13.so
+7f1f97d91000-7f1f97f91000 ---p 00002000 08:05 1966226                    /lib/x86_64-linux-gnu/libdl-2.13.so
+7f1f97f91000-7f1f97f92000 r--p 00002000 08:05 1966226                    /lib/x86_64-linux-gnu/libdl-2.13.so
+7f1f97f92000-7f1f97f93000 rw-p 00003000 08:05 1966226                    /lib/x86_64-linux-gnu/libdl-2.13.so
+7f1f97f93000-7f1f97f97000 r-xp 00000000 08:05 3550532                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/jli/libjli.so
+7f1f97f97000-7f1f98196000 ---p 00004000 08:05 3550532                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/jli/libjli.so
+7f1f98196000-7f1f98197000 r--p 00003000 08:05 3550532                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/jli/libjli.so
+7f1f98197000-7f1f98198000 rw-p 00004000 08:05 3550532                    /usr/lib/jvm/java-6-openjdk/jre/lib/amd64/jli/libjli.so
+7f1f98198000-7f1f981b0000 r-xp 00000000 08:05 1966237                    /lib/x86_64-linux-gnu/libpthread-2.13.so
+7f1f981b0000-7f1f983af000 ---p 00018000 08:05 1966237                    /lib/x86_64-linux-gnu/libpthread-2.13.so
+7f1f983af000-7f1f983b0000 r--p 00017000 08:05 1966237                    /lib/x86_64-linux-gnu/libpthread-2.13.so
+7f1f983b0000-7f1f983b1000 rw-p 00018000 08:05 1966237                    /lib/x86_64-linux-gnu/libpthread-2.13.so
+7f1f983b1000-7f1f983b5000 rw-p 00000000 00:00 0 
+7f1f983b5000-7f1f983d6000 r-xp 00000000 08:05 1966092                    /lib/x86_64-linux-gnu/ld-2.13.so
+7f1f983ed000-7f1f983f7000 rw-p 00000000 00:00 0 
+7f1f983f7000-7f1f984ad000 rw-p 00000000 00:00 0 
+7f1f984ad000-7f1f984b0000 ---p 00000000 00:00 0 
+7f1f984b0000-7f1f985b3000 rw-p 00000000 00:00 0 
+7f1f985c9000-7f1f985d1000 rw-s 00000000 08:05 2500109                    /tmp/hsperfdata_sghuman/4591
+7f1f985d1000-7f1f985d2000 rw-p 00000000 00:00 0 
+7f1f985d2000-7f1f985d3000 r--p 00000000 00:00 0 
+7f1f985d3000-7f1f985d5000 rw-p 00000000 00:00 0 
+7f1f985d5000-7f1f985d6000 r--p 00020000 08:05 1966092                    /lib/x86_64-linux-gnu/ld-2.13.so
+7f1f985d6000-7f1f985d8000 rw-p 00021000 08:05 1966092                    /lib/x86_64-linux-gnu/ld-2.13.so
+7fff1b690000-7fff1b6b1000 rw-p 00000000 00:00 0                          [stack]
+7fff1b7f3000-7fff1b7f4000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+
+VM Arguments:
+jvm_args: -Dfile.encoding=UTF-8 -Xbootclasspath:/home/sghuman/Files/Android/SDK/android-sdk-linux/platforms/android-10/android.jar:/home/sghuman/Files/Android/SDK/android-sdk-linux/add-ons/addon-google_apis-google-10/libs/usb.jar:/home/sghuman/Files/Android/SDK/android-sdk-linux/add-ons/addon-google_apis-google-10/libs/maps.jar 
+java_command: my.maps.org.Routing
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+PATH=/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/opt/altera9.1sp2/quartus/bin
+USERNAME=sghuman
+LD_LIBRARY_PATH=/usr/lib/jvm/java-6-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-6-openjdk/jre/lib/amd64:/usr/lib/jvm/java-6-openjdk/jre/../lib/amd64
+SHELL=/bin/bash
+DISPLAY=:0
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0x783e60], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGBUS: [libjvm.so+0x783e60], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGFPE: [libjvm.so+0x6485c0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGPIPE: [libjvm.so+0x6485c0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGXFSZ: [libjvm.so+0x6485c0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGILL: [libjvm.so+0x6485c0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGUSR1: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGUSR2: [libjvm.so+0x648770], sa_mask[0]=0x00000004, sa_flags=0x10000004
+SIGHUP: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGINT: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGTERM: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGQUIT: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+
+
+---------------  S Y S T E M  ---------------
+
+OS:Ubuntu 11.10 (oneiric)
+uname:Linux 3.0.0-17-generic #30-Ubuntu SMP Thu Mar 8 20:45:39 UTC 2012 x86_64
+libc:glibc 2.13 NPTL 2.13 
+rlimit: STACK 8192k, CORE 0k, NPROC 63456, NOFILE 4096, AS infinity
+load average:0.10 0.11 0.18
+
+/proc/meminfo:
+MemTotal:        8140268 kB
+MemFree:         3452132 kB
+Buffers:          452792 kB
+Cached:          1496340 kB
+SwapCached:            0 kB
+Active:          3032348 kB
+Inactive:        1284796 kB
+Active(anon):    2469004 kB
+Inactive(anon):   106568 kB
+Active(file):     563344 kB
+Inactive(file):  1178228 kB
+Unevictable:          32 kB
+Mlocked:              32 kB
+SwapTotal:       8334332 kB
+SwapFree:        8334332 kB
+Dirty:               288 kB
+Writeback:             0 kB
+AnonPages:       2367844 kB
+Mapped:           191972 kB
+Shmem:            207556 kB
+Slab:             177944 kB
+SReclaimable:      78476 kB
+SUnreclaim:        99468 kB
+KernelStack:        4328 kB
+PageTables:        39264 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:    12404464 kB
+Committed_AS:    5295604 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:      584976 kB
+VmallocChunk:   34359145892 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:       63488 kB
+DirectMap2M:     8273920 kB
+
+
+CPU:total 8 (4 cores per cpu, 2 threads per core) family 6 model 42 stepping 7, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, ht
+
+Memory: 4k page, physical 8140268k(3452132k free), swap 8334332k(8334332k free)
+
+vm_info: OpenJDK 64-Bit Server VM (20.0-b11) for linux-amd64 JRE (1.6.0_23-b23), built on Feb 23 2012 05:39:46 by "buildd" with gcc 4.6.1
+
+time: Sun Apr  8 16:44:45 2012
+elapsed time: 0 seconds
+
