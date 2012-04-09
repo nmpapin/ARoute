@@ -332,4 +332,40 @@ public class Routing
 	}
 	*/
 	
+	public ArrayList<GeoPoint> getCustomQueryPoints(String url)
+	{
+		ArrayList<GeoPoint> geopoints = null;
+
+		//remove after implementing concurrency
+		requestFinished = false;
+		
+		try
+		// JSON processing
+		{
+			// initial query
+			JSONObject results = getJSONResults(url);
+
+			// routesArray contains ALL routes - we have chosen to use only one
+			JSONArray routesArray = results.getJSONArray("routes");
+			// Grab the first route
+			JSONObject route = routesArray.getJSONObject(0);
+			// Take all legs from the route
+			JSONArray legs = route.getJSONArray("legs");
+			// Grab steps (2nd element in legs array)
+			
+			JSONObject leg = legs.getJSONObject(0);
+			//JSONObject stepObject = legs.getJSONObject("steps");
+			JSONArray steps = leg.getJSONArray("steps");
+			//System.out.println(steps);
+			
+			geopoints = extractGeoPoints(steps);
+
+		} catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return geopoints;
+	}
 }
