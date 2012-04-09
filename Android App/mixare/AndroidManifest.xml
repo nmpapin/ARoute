@@ -41,10 +41,16 @@
                		android:value=".MixView" />
         </activity>
         
-        <activity android:name=".maps.HelloGoogleMapsActivity"
-            	  android:label="">
+        <activity android:name=".maps.HelloGoogleMapsActivity">
             <intent-filter>
                   <action android:name="org.mixare.maps.HelloGoogleMapsActivity" />
+                  <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>                
+        </activity>
+        
+        <activity android:name=".routing.RouteActivity">
+            <intent-filter>
+                  <action android:name="org.mixare.routing.RouteActivity" />
                   <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>                
         </activity>

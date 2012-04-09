@@ -1,4 +1,4 @@
-package my.routing.org;
+package org.mixare.routing;
 
 import java.util.Hashtable;
 

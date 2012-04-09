@@ -39,6 +39,7 @@ import org.mixare.data.DataSource;
 import org.mixare.data.DataSourceList;
 import org.mixare.gui.PaintScreen;
 import org.mixare.render.Matrix;
+import org.mixare.routing.RouteActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -304,9 +305,9 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 		{
 			String query = intent.getStringExtra(SearchManager.QUERY);
 			
-			//Intent routeIntent = new Intent();
+			Intent routeIntent = new Intent(RouteActivity.class.getName());
 			
-			//startActivity(routeIntent);
+			startActivity(routeIntent);
 		}
 	}
 
