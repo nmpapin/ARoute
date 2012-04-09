@@ -43,6 +43,7 @@ import android.widget.TextView;
  */
 public class DataSource extends Activity {
 	
+	public static final String DATA_URL_BASE = "http://nmpapin.heliohost.org/cs4261/";
 	
 	private String name;
 	private String url;
@@ -209,7 +210,7 @@ public class DataSource extends Activity {
 				"?latitude=" + Double.toString(lat) + 
 				"&longitude=" + Double.toString(lon) + 
 				"&radius=" + Double.toString(radius) +
-				"&maxRows=25";
+				"&maxRows=50";
 			break;
 			}
 			

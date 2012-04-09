@@ -55,7 +55,7 @@ public class StopTimesTask extends AsyncTask<List, Void, Void>
 			}
 		}
 		
-		String url = "http://nmpapin.heliohost.org/cs4261/" + "get_stop_times.php?stop_id=" + mStop.getStopID();
+		String url = DataSource.DATA_URL_BASE + "get_stop_times.php?stop_id=" + mStop.getStopID();
 		URL updateURL;
 		try 
 		{
