@@ -468,8 +468,8 @@ public class MixContext extends ContextWrapper {
             {
                 Intent mapIntent = new Intent(org.mixare.maps.HelloGoogleMapsActivity.class.getName());
                 mapIntent.putExtra("startLocation", start);
-                mapIntent.putExtra("latitude", latitude);
-                mapIntent.putExtra("longitude", longitude);
+                mapIntent.putExtra("destLat", latitude);
+                mapIntent.putExtra("destLong", longitude);
                 
                 startActivity(mapIntent);
             }

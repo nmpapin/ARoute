@@ -300,9 +300,14 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 	}
 
 	private void handleIntent(Intent intent) {
-		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) 
+		{
 			String query = intent.getStringExtra(SearchManager.QUERY);
-			doMixSearch(query);
+			
+			//Intent routeIntent = new Intent();
+			
+			
+			//startActivity(routeIntent);
 		}
 	}
 
