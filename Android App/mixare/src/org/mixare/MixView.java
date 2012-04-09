@@ -306,7 +306,6 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 			
 			//Intent routeIntent = new Intent();
 			
-			
 			//startActivity(routeIntent);
 		}
 	}
