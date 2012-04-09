@@ -1,0 +1,16 @@
+start: 704 Cherry St NW, Atlanta, Ga 30332
+	coordinates: 33.775366,-84.39517
+
+end: Kroger: 1715 Howell Mill Road Northwest, Atlanta, GA 30318 (Kroger Pharmacy)
+	coordinates: 33.803186, -84.41328
+
+1st bus:
+		Bus - 12 - Howell Mill Rd/Cumberland - Direction: 12 Cumberland Via Northside
+		Service run by Metropolitan Atlanta Rapid Transit Authority
+			6:28am	Depart 10th St NW@Atlantic Dr NW (Stop ID: 905029)
+
+				gps coordinates: 33.781197, -84.398003
+
+			6:41am	Arrive Howell Mill Rd NW@Bellemeade Ave NW (Stop ID: 902045)
+
+				gps coordinates: 33.80031, -84.415716
