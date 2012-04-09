@@ -10,7 +10,8 @@ import java.io.File;
 import java.util.*;
 
 public class HelloGoogleMapsActivity extends MapActivity {
-    /** Called when the activity is first created. */
+    
+	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -37,15 +38,12 @@ public class HelloGoogleMapsActivity extends MapActivity {
         
         //Testing Routing Function
         Routing router = new Routing();
-        //ArrayList<GeoPoint> points = (ArrayList<GeoPoint>) router.getRouteGeoPoints(33.790169, -84.3881, 33.775522, -84.39635, "walking");
+        ArrayList<GeoPoint> points = (ArrayList<GeoPoint>) router.getRouteGeoPoints(33.790169, -84.3881, 33.775522, -84.39635, "walking");
         
-        //development trick to deal with http delay
-        ArrayList<GeoPoint> points = router.testGetGeopointsFromJSONFile(new File("samplejsonrouting"));
-        
-        RouteOverlay route;
+        RouteOverlay route = null;
         if (points != null)
         	route = new RouteOverlay(mapView, Color.GREEN, points);
-        //mapOverlays.add(route);
+        mapOverlays.add(route);
         //End Routing Function test
     }
     
