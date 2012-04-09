@@ -171,9 +171,66 @@ public class Routing
 	
 	public JSONObject getJSONResults(String url) throws JSONException
 	{
-		return new JSONObject(getHTTPResponse(url));
+		//return new JSONObject(getHTTPResponse(url)); //old version
+		
+		try 
+		{
+			URL updateURL = new URL(url);
+			URLConnection conn = updateURL.openConnection();
+	        InputStream is = conn.getInputStream();
+	        
+			return new JSONObject(getStreamData(is));
+		} 
+		catch (MalformedURLException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
+	//New methods using url connection
+	public String getStreamData(InputStream is)
+	{
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is), 8 * 1024);
+		StringBuilder sb = new StringBuilder();
+
+		try 
+		{
+			String line;
+			while ((line = reader.readLine()) != null) 
+			{
+				sb.append(line + "\n");
+			}
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		} 
+		finally 
+		{
+			try 
+			{
+				is.close();
+			}
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		return sb.toString();
+	}
+	
+	//Decided to skip using http client and replace with simply url connection
+	/*
 	public String getHTTPResponse(String url)
 	{
 		final AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
@@ -236,8 +293,10 @@ public class Routing
 		
 		requestFinished = true; //delete later
 		return sb.toString();
-	}
+	} */
 	
+	// Doesn't work - delete later
+	/*
 	public ArrayList<GeoPoint> testGetGeopointsFromJSONFile(File f)
 	{
 		ArrayList<GeoPoint> geopoints = null;
@@ -271,5 +330,6 @@ public class Routing
 		
 		return geopoints;
 	}
+	*/
 	
 }
