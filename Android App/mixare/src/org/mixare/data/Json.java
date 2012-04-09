@@ -29,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.mixare.BusStopMarker;
 import org.mixare.BusStopMarker.Route;
+import org.mixare.BusStopMarker.RouteVariation;
 import org.mixare.Marker;
 import org.mixare.MixContext;
 import org.mixare.MixView;
@@ -187,10 +188,19 @@ public class Json extends DataHandler {
 			for(int i = 0; i < routes.length(); i++)
 			{
 				JSONObject route = routes.getJSONObject(i);
-				stopRoutes.add(new Route(route.getString("id"), route.getString("name")));
+				JSONArray vars = route.getJSONArray("variations");
+				ArrayList<RouteVariation> routeVariations = new ArrayList<RouteVariation>();
+				for(int j = 0; j < vars.length(); j++)
+				{
+					JSONObject variation = vars.getJSONObject(j);
+					routeVariations.add(new RouteVariation(variation.getInt("id"), variation.getString("name"), variation.getInt("direction")));
+				}
+				
+				stopRoutes.add(new Route(route.getString("id"), route.getString("name"), routeVariations.toArray(new RouteVariation[0])));
 			}
 			
 			ma = new BusStopMarker(
+					jo.getInt("stop_id"),
 					unescapeHTML(jo.getString("title"), 0), 
 					jo.getDouble("lat"), 
 					jo.getDouble("lng"), 

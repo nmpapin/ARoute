@@ -33,6 +33,9 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.net.ssl.HostnameVerifier;
@@ -44,6 +47,7 @@ import javax.net.ssl.X509TrustManager;
 import org.mixare.BusStopMarker.Route;
 import org.mixare.data.DataSource;
 import org.mixare.data.DataSourceList;
+import org.mixare.data.StopTimesTask;
 import org.mixare.render.Matrix;
 
 import android.app.Activity;
@@ -431,7 +435,7 @@ public class MixContext extends ContextWrapper {
 			is.close();
 	}
 
-	public void loadStopDetailsDialog(String title, Route[] routes)
+	public void loadStopDetailsDialog(String title, BusStopMarker stop)
 	{
 		Dialog d = new Dialog(mixView)
 		{
@@ -449,17 +453,42 @@ public class MixContext extends ContextWrapper {
 		TextView titleView = (TextView)d.findViewById(R.id.stopDetailDialogTitle);
 		titleView.setText(title);
 		
-		ListView list = (ListView)d.findViewById(R.id.stopDetailDialogRouteList);
+		ExpandableListView list = (ExpandableListView)d.findViewById(R.id.stopDetailDialogRouteList);
 		
-		ListAdapter adapter = new ArrayAdapter<Route>(
-                this, 
-                R.layout.stopdetailsdialogitem, 
-                R.id.routeName, 
-                routes);
+		List<Map<String, ?>> groupMaps = stop.getRouteList();
+		List<List<Map<String, ?>>> childMaps = stop.getRouteSubdataList();
+		
+		SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
+				this,
+				groupMaps,
+				R.layout.stopdetailsdialogitemroute,
+				new String[]{
+					"id",
+					"name"
+				},
+				new int[]{
+					R.id.routeNumber,
+					R.id.routeName
+				},
+				childMaps,
+				R.layout.stopdetailsdialogroutevariation,
+				new String[]{
+					"direction",
+					"name",
+					"times"
+				},
+				new int[]{
+					R.id.routeVariationDirection,
+					R.id.routeVariationName,
+					R.id.routeVariationTimes
+				}
+		);
 		
 		list.setAdapter(adapter);
 		
 		d.show();
+		
+		new StopTimesTask(adapter, stop).execute(groupMaps, childMaps);
 	}
 	
 	public void loadMixViewWebPage(String url) throws Exception {

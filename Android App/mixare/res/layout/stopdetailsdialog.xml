@@ -13,6 +13,7 @@
         android:gravity="center_horizontal"
         android:layout_weight="1"
         android:text="Large Text"
+        android:textSize="36dp"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
@@ -21,14 +22,15 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="Routes Served:"
+        android:textSize="24dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <ListView
+
+    <ExpandableListView
         android:id="@+id/stopDetailDialogRouteList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1" >
 
-    </ListView>
+    </ExpandableListView>
 
 </LinearLayout>

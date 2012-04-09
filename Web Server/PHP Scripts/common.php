@@ -41,7 +41,8 @@
 	{
 		$routes = $database->getResults
 		(
-			
+			"SELECT *
+			FROM route;"
 		);
 		
 		return $routes;
@@ -51,7 +52,7 @@
 	{
 		$routes = $database->getResults
 		(
-			"SELECT DISTINCT r.marta_id AS id, r.route_name AS name
+			"SELECT DISTINCT r.id AS route_id, r.marta_id AS id, r.route_name AS name
 			FROM route AS r INNER JOIN route_variation AS rv ON r.id = rv.route_id
 			INNER JOIN route_stop AS rs ON rv.id = rs.route_var_id
 			WHERE rs.stop_id = '" . $stop . "';"
@@ -64,7 +65,7 @@
 	{
 		$route_vars = $database->getResults
 		(
-			"SELECT DISTINCT r.marta_id AS route_id, r.route_name AS route_name, 
+			"SELECT DISTINCT r.id AS id, r.marta_id AS route_id, r.route_name AS route_name, 
 							 rv.id AS variation_id, rv.variation_name AS variation_name,
 							 rv.direction AS variation_direction
 			FROM route AS r INNER JOIN route_variation AS rv ON r.id = rv.route_id
@@ -79,6 +80,7 @@
 			{
 				$route_variations[$var['route_id']] = array
 				(
+					'route_id' => $var['id'],
 					'id' => $var['route_id'],
 					'name' => $var['route_name'], 
 					'variations' => array()
@@ -116,7 +118,7 @@
 			{
 				$post_args = array
 				(
-					'route_id' => $route['id'],
+					'route_id' => $route['route_id'],
 					'direction' => $var['direction'],
 					'headsign' => $var['name'],
 					'stop_id' => $stop
@@ -128,6 +130,7 @@
 				
 				$last_bus = $row[0];
 				$last_bus = $last_bus->first_child()->text();
+				
 				if(substr($last_bus, -2) === "-1")
 				{
 					unset($route['variations'][$var_num]);
