@@ -108,7 +108,7 @@ public class RouteActivity extends MapActivity {
         //Add all itemized overlays
         mapOverlays.add(busoverlay); //add overlay to mapview
         mapOverlays.add(walkingoverlay); //add overlay to mapview
-        
+        mapOverlays.add(staroverlay);
         /* End Drawing Station */
     }
     
