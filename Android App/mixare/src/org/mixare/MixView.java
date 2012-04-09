@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.mixare.R.drawable;
 import org.mixare.data.DataHandler;
+import org.mixare.data.DataSource;
 import org.mixare.data.DataSourceList;
 import org.mixare.gui.PaintScreen;
 import org.mixare.render.Matrix;
@@ -288,7 +289,7 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 				dataSourceEditor.putString("DataSource1", "Twitter|http://search.twitter.com/search.json|2|0|true");
 				dataSourceEditor.putString("DataSource2", "OpenStreetmap|http://open.mapquestapi.com/xapi/api/0.6/node[railway=station]|3|1|true");
 				dataSourceEditor.putString("DataSource3", "Own URL|http://mixare.org/geotest.php|4|0|false");*/
-				dataSourceEditor.putString("DataSource0", "Bus Stops|http://nmpapin.heliohost.org/cs4261/get_near_stops.php|5|0|true");
+				dataSourceEditor.putString("DataSource0", "Bus Stops|" + DataSource.DATA_URL_BASE + "get_near_stops.php|5|0|true");
 				dataSourceEditor.commit();
 
 			} 
@@ -487,7 +488,7 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 	public boolean onCreateOptionsMenu(Menu menu) {
 		int base = Menu.FIRST;
 		/*define the first*/
-		MenuItem item1 =menu.add(base, base, base, getString(DataView.MENU_ITEM_1)); 
+		//MenuItem item1 =menu.add(base, base, base, getString(DataView.MENU_ITEM_1)); 
 		MenuItem item2 =menu.add(base, base+1, base+1,  getString(DataView.MENU_ITEM_2)); 
 		MenuItem item3 =menu.add(base, base+2, base+2,  getString(DataView.MENU_ITEM_3));
 		MenuItem item4 =menu.add(base, base+3, base+3,  getString(DataView.MENU_ITEM_4));
@@ -496,7 +497,7 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 		MenuItem item7 =menu.add(base, base+6, base+6,  getString(DataView.MENU_ITEM_7));
 
 		/*assign icons to the menu items*/
-		item1.setIcon(drawable.icon_datasource);
+		//item1.setIcon(drawable.icon_datasource);
 		item2.setIcon(android.R.drawable.ic_menu_view);
 		item3.setIcon(android.R.drawable.ic_menu_mapmode);
 		item4.setIcon(android.R.drawable.ic_menu_zoom);
