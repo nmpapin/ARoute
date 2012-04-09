@@ -1,4 +1,4 @@
-package my.maps.org;
+package org.mixare.maps;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

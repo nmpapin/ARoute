@@ -41,6 +41,14 @@
                		android:value=".MixView" />
         </activity>
         
+        <activity android:name=".maps.HelloGoogleMapsActivity"
+            	  android:label="">
+            <intent-filter>
+                  <action android:name="org.mixare.maps.HelloGoogleMapsActivity" />
+                  <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>                
+        </activity>
+        
 		<activity android:name="MixListView" 
 			android:screenOrientation="user" 
 			android:launchMode="singleTop">

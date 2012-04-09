@@ -457,7 +457,6 @@ public class MixContext extends ContextWrapper {
 		ExpandableListView list = (ExpandableListView)d.findViewById(R.id.stopDetailDialogRouteList);
 		
 		final Button button = (Button)d.findViewById(R.id.stopWalkRouteButton);
-		final Location end = new Location("Marker");
 		final double longitude = stop.getLongitude();
 		final double latitude = stop.getLatitude();
 		
@@ -467,7 +466,12 @@ public class MixContext extends ContextWrapper {
         {
             public void onClick(View v) 
             {
+                Intent mapIntent = new Intent(org.mixare.maps.HelloGoogleMapsActivity.class.getName());
+                mapIntent.putExtra("startLocation", start);
+                mapIntent.putExtra("latitude", latitude);
+                mapIntent.putExtra("longitude", longitude);
                 
+                startActivity(mapIntent);
             }
         });
 		

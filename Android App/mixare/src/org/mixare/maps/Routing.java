@@ -1,4 +1,4 @@
-package my.maps.org;
+package org.mixare.maps;
 
 import java.io.BufferedReader;
 import java.io.File;

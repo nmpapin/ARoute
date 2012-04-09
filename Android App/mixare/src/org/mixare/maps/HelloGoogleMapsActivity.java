@@ -1,4 +1,4 @@
-package my.maps.org;
+package org.mixare.maps;
 
 import com.google.android.maps.*;
 
@@ -12,6 +12,8 @@ import android.util.Log;
 
 import java.io.File;
 import java.util.*;
+
+import org.mixare.R;
 
 /**
  * Provides walking direction routing from a given location to a given destination
@@ -45,7 +47,7 @@ public class HelloGoogleMapsActivity extends MapActivity {
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.walkingmap);
         Intent startIntent = getIntent();
         
         /* Set zoom capability */
