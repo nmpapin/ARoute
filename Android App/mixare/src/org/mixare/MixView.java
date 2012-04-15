@@ -35,7 +35,7 @@ import java.util.List;
 
 import org.mixare.R.drawable;
 import org.mixare.data.DataHandler;
-import org.mixare.data.DataSource;
+import org.mixare.data.DataInterface;
 import org.mixare.data.DataSourceList;
 import org.mixare.gui.PaintScreen;
 import org.mixare.render.Matrix;
@@ -290,7 +290,7 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 				dataSourceEditor.putString("DataSource1", "Twitter|http://search.twitter.com/search.json|2|0|true");
 				dataSourceEditor.putString("DataSource2", "OpenStreetmap|http://open.mapquestapi.com/xapi/api/0.6/node[railway=station]|3|1|true");
 				dataSourceEditor.putString("DataSource3", "Own URL|http://mixare.org/geotest.php|4|0|false");*/
-				dataSourceEditor.putString("DataSource0", "Bus Stops|" + DataSource.DATA_URL_BASE + "get_near_stops.php|5|0|true");
+				dataSourceEditor.putString("DataSource0", "Bus Stops|" + DataInterface.DATA_URL_BASE + "get_near_stops.php|5|0|true");
 				dataSourceEditor.commit();
 
 			} 

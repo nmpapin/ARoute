@@ -54,15 +54,11 @@ public class StopTimesTask extends AsyncTask<List, Void, Void>
 			}
 		}
 		
-		String url = DataSource.DATA_URL_BASE + "get_stop_times.php?stop_id=" + mStop.getStopID();
+		String url = DataInterface.DATA_URL_BASE + "get_stop_times.php?stop_id=" + mStop.getStopID();
 		URL updateURL;
 		try 
-		{
-			updateURL = new URL(url);
-			URLConnection conn = updateURL.openConnection();
-	        InputStream is = conn.getInputStream();
-	        
-	        String times = getStreamData(is);
+		{	        
+	        String times = DataInterface.getURLContents(url);
 	        
 			updateFailure(children);
 	        
@@ -101,15 +97,7 @@ public class StopTimesTask extends AsyncTask<List, Void, Void>
 					break;
 				parentList.remove(kv.getValue());
 			}
-		} 
-		catch (MalformedURLException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		} 
+		}
 		catch (JSONException e) 
 		{
 			e.printStackTrace();
@@ -133,36 +121,5 @@ public class StopTimesTask extends AsyncTask<List, Void, Void>
 				((Map<String, Object>)m).put("times", "No Times Scheduled");
 			}
 		}
-	}
-	
-	public String getStreamData(InputStream is)
-	{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is), 8 * 1024);
-		StringBuilder sb = new StringBuilder();
-
-		try 
-		{
-			String line;
-			while ((line = reader.readLine()) != null) 
-			{
-				sb.append(line + "\n");
-			}
-		} 
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		} 
-		finally 
-		{
-			try 
-			{
-				is.close();
-			}
-			catch (IOException e) 
-			{
-				e.printStackTrace();
-			}
-		}
-		return sb.toString();
 	}
 }
