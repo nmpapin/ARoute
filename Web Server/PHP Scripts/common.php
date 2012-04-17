@@ -193,14 +193,16 @@
 	
 		$stop_data = $database->getResult
 		(
-			"SELECT count(DISTINCT rv.route_id) AS number
+			"SELECT count(DISTINCT r.id) AS number
 			FROM routing_stop AS s
 			JOIN routing_route_stop AS rs ON s.id = rs.stop_id
 			JOIN routing_route_variation AS rv ON rs.route_var_id = rv.id
-			WHERE s.id = $stop;"
+			JOIN routing_route AS r ON rv.route_id = r.id
+			WHERE s.id = $stop
+			AND r.type = 'Train';"
 		);
 		
-		return ($stop_data['number'] > 1);
+		return ($stop_data['number'] > 0);
 	}
 	
 	function getFollowingStopTimes($database, $stop, $route, $time)
