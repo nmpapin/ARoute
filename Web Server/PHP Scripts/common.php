@@ -11,7 +11,6 @@
 			$data_string .= urlencode($key).'='.urlencode($value).'&';
 		}
 		$data_string = rtrim($data_string, '&');
-		
 		$ch = curl_init();
 		
 		if(!$post)

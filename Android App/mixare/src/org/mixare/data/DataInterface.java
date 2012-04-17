@@ -7,12 +7,18 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Intent;
+import android.location.Location;
 import android.text.format.Time;
+import android.util.Log;
 
 public class DataInterface 
 {
@@ -185,6 +191,45 @@ public class DataInterface
 		} 
 		
 		return data;
+	}
+	
+	/**
+	 * Returns a map of suggestions for the route for navigation mode.
+	 */
+	public static Map<String, Location> getRouteSuggestions(String query)
+	{
+		query = URLEncoder.encode(query);
+		
+		String url = "http://maps.googleapis.com/maps/api/geocode/json?address=" + query + "&sensor=true";
+		
+		Map<String, Location> ret = new HashMap<String, Location>();
+		
+		try
+		{
+			Log.i("GeocodeSuggestions", "Loading suggestions: " + url);
+			JSONObject res = new JSONObject(getURLContents(url));
+			JSONArray arr = res.getJSONArray("results");
+			
+			for(int i = 0; i < arr.length(); i++)
+			{
+				JSONObject jo = arr.getJSONObject(i);
+				String name = jo.getString("formatted_address");
+				JSONObject locs = jo.getJSONObject("geometry").getJSONObject("location");
+				Location loc = new Location("geocode");
+				loc.setLatitude(locs.getDouble("lat"));
+				loc.setLongitude(locs.getDouble("lng"));
+				
+				ret.put(name, loc);
+			}
+			
+			return ret;
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+			//Log.i("GeocodeSuggestions", "Error occured parsing json.", e);
+			return ret;
+		}
 	}
 	
 	private static String getStreamData(InputStream is)

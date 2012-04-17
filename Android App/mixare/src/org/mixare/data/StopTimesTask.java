@@ -14,7 +14,7 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mixare.BusStopMarker;
+import org.mixare.StopMarker;
 import org.mixare.MixContext;
 import org.mixare.MixView;
 
@@ -25,10 +25,10 @@ import android.widget.SimpleExpandableListAdapter;
 public class StopTimesTask extends AsyncTask<List, Void, Void> 
 {
 	private SimpleExpandableListAdapter mAdapter;
-	private BusStopMarker mStop;
+	private StopMarker mStop;
 	private MixContext mCtx;
 	
-	public StopTimesTask(SimpleExpandableListAdapter adapter, BusStopMarker stop)
+	public StopTimesTask(SimpleExpandableListAdapter adapter, StopMarker stop)
 	{
 		mAdapter = adapter;
 		mStop = stop;

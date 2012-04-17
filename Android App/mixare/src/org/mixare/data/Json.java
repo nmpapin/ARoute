@@ -27,9 +27,9 @@ import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mixare.BusStopMarker;
-import org.mixare.BusStopMarker.Route;
-import org.mixare.BusStopMarker.RouteVariation;
+import org.mixare.StopMarker;
+import org.mixare.StopMarker.Route;
+import org.mixare.StopMarker.RouteVariation;
 import org.mixare.Marker;
 import org.mixare.MixContext;
 import org.mixare.MixView;
@@ -199,7 +199,7 @@ public class Json extends DataHandler {
 				stopRoutes.add(new Route(route.getString("id"), route.getString("name"), routeVariations.toArray(new RouteVariation[0])));
 			}
 			
-			ma = new BusStopMarker(
+			ma = new StopMarker(
 					jo.getInt("stop_id"),
 					unescapeHTML(jo.getString("title"), 0), 
 					jo.getDouble("lat"), 

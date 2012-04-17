@@ -44,7 +44,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.X509TrustManager;
 
-import org.mixare.BusStopMarker.Route;
+import org.mixare.StopMarker.Route;
 import org.mixare.data.DataInterface;
 import org.mixare.data.DataSource;
 import org.mixare.data.DataSourceList;
@@ -437,7 +437,7 @@ public class MixContext extends ContextWrapper {
 			is.close();
 	}
 
-	public void loadStopDetailsDialog(String title, BusStopMarker stop)
+	public void loadStopDetailsDialog(String title, StopMarker stop)
 	{
 		Dialog d = new Dialog(mixView)
 		{

@@ -20,39 +20,53 @@ package org.mixare;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.mixare.data.DataHandler;
+import org.mixare.data.DataInterface;
 import org.mixare.data.DataSource;
 import org.mixare.data.DataSourceList;
+import org.mixare.data.StopTimesTask;
+import org.mixare.routing.RouteActivity;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnCreateContextMenuListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,11 +79,15 @@ public class MixListView extends ListActivity {
 	private static int list;
 
 	private Vector<SpannableString> listViewMenu;
+	private Vector<Marker> selectedItem;
 	private Vector<String> selectedItemURL;
 	private Vector<String> dataSourceMenu;
 	private Vector<String> dataSourceDescription;
 	private Vector<Boolean> dataSourceChecked;
 	private Vector<Integer> dataSourceIcon;
+	
+	private Vector<String> suggestionItems;
+	private Vector<Location> suggestionLocations;
 	
 	private MixContext mixContext;
 
@@ -106,12 +124,9 @@ public class MixListView extends ListActivity {
 		dataView = MixView.dataView;	
 		ctx = this;
 		mixContext = dataView.getContext();
-
+		
 		switch(list){
 		case 1:
-			
-
-			
 			adapter = new ListItemAdapter(this);
 			//adapter.colorSource(getDataSource());
 			getListView().setTextFilterEnabled(true);
@@ -120,30 +135,16 @@ public class MixListView extends ListActivity {
 			break;
 
 		case 2:
-			selectedItemURL = new Vector<String>();
+			selectedItem = new Vector<Marker>();
 			listViewMenu = new Vector<SpannableString>();
 			DataHandler jLayer = dataView.getDataHandler();
-			if (dataView.isFrozen() && jLayer.getMarkerCount() > 0){
-				selectedItemURL.add("search");
-			}
 			/*add all marker items to a title and a URL Vector*/
 			for (int i = 0; i < jLayer.getMarkerCount(); i++) {
 				Marker ma = jLayer.getMarker(i);
-				if(ma.isActive()) {
-					if (ma.getURL()!=null) {
-						/* Underline the title if website is available*/
-							underlinedTitle = new SpannableString(ma.getTitle());
-							underlinedTitle.setSpan(new UnderlineSpan(), 0, underlinedTitle.length(), 0);
-							listViewMenu.add(underlinedTitle);
-						} else {
-							listViewMenu.add(new SpannableString(ma.getTitle()));
-						}
-					/*the website for the corresponding title*/
-					if (ma.getURL()!=null)
-						selectedItemURL.add(ma.getURL());
-					/*if no website is available for a specific title*/
-					else
-						selectedItemURL.add("");
+				if(ma.isActive()) 
+				{
+					listViewMenu.add(new SpannableString(ma.getTitle()));
+					selectedItem.add(ma);
 				}
 			}
 
@@ -165,14 +166,29 @@ public class MixListView extends ListActivity {
 			setListAdapter(new ArrayAdapter<SpannableString>(this, android.R.layout.simple_list_item_1,listViewMenu));
 			getListView().setTextFilterEnabled(true);
 			break;
-
+		case 3:
+			String addr = this.getIntent().getExtras().getString("address");
+			Map<String, Location> locs = DataInterface.getRouteSuggestions(addr);
+			
+			suggestionItems = new Vector<String>();
+			suggestionLocations = new Vector<Location>();
+			
+			for(Map.Entry<String, Location> l : locs.entrySet())
+			{
+				suggestionItems.add(l.getKey());
+				suggestionLocations.add(l.getValue());
+			}
+			
+			setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, suggestionItems));
+			getListView().setTextFilterEnabled(true);
+			break;
 		}
 	}
 
 	private void handleIntent(Intent intent) {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			String query = intent.getStringExtra(SearchManager.QUERY);
-			doMixSearch(query);
+			getRouteSuggestions(query);
 		}
 	}
 
@@ -182,44 +198,12 @@ public class MixListView extends ListActivity {
 		handleIntent(intent);
 	}
 
-	private void doMixSearch(String query) {
-		DataHandler jLayer = dataView.getDataHandler();
-		if (!dataView.isFrozen()) {
-			originalMarkerList = jLayer.getMarkerList();
-			MixMap.originalMarkerList = jLayer.getMarkerList();
-		}
-		originalMarkerList = jLayer.getMarkerList();
-		searchResultMarkers = new ArrayList<Marker>();
-		Log.d("SEARCH-------------------0", ""+query);
-		setSearchQuery(query);
-
-		selectedItemURL = new Vector<String>();
-		listViewMenu = new Vector<SpannableString>();
-		for(int i = 0; i < jLayer.getMarkerCount();i++){
-			Marker ma = jLayer.getMarker(i);
-
-			if (ma.getTitle().toLowerCase().indexOf(searchQuery.toLowerCase()) != -1) {
-				searchResultMarkers.add(ma);
-				listViewMenu.add(new SpannableString(ma.getTitle()));
-				/*the website for the corresponding title*/
-				if (ma.getURL() != null)
-					selectedItemURL.add(ma.getURL());
-				/*if no website is available for a specific title*/
-				else
-					selectedItemURL.add("");
-			}
-		}
-		if (listViewMenu.size() == 0) {
-			Toast.makeText( this, getString(DataView.SEARCH_FAILED_NOTIFICATION), Toast.LENGTH_LONG ).show();
-		}
-		else {
-			jLayer.setMarkerList(searchResultMarkers);
-			dataView.setFrozen(true);
-			setList(2);
-			finish();
-			Intent intent1 = new Intent(this, MixListView.class); 
-			startActivityForResult(intent1, 42);
-		}
+	private void getRouteSuggestions(String query) 
+	{
+		MixListView.setList(3);
+		Intent intent1 = new Intent(MixListView.this, MixListView.class); 
+		intent1.putExtra("address", query);
+		startActivityForResult(intent1, 42);
 	}
 
 
@@ -238,35 +222,116 @@ public class MixListView extends ListActivity {
 		case 2:
 			clickOnListView(position);
 			break;
+		case 3:
+			clickOnSuggestion(position);
+			break;
 		}
 
 	}
 
-	public void clickOnListView(int position){
-		/*if no website is available for this item*/
-		String selectedURL = position < selectedItemURL.size() ? selectedItemURL.get(position) : null;
-		if (selectedURL == null || selectedURL.length() <= 0)
-			Toast.makeText( this, getString(DataView.NO_WEBINFO_AVAILABLE), Toast.LENGTH_LONG ).show();			
-		else if("search".equals(selectedURL)){
-			dataView.setFrozen(false);
-			dataView.getDataHandler().setMarkerList(originalMarkerList);
-			setList(2);
-			finish();
-			Intent intent1 = new Intent(this, MixListView.class); 
-			startActivityForResult(intent1, 42);
+	public void clickOnSuggestion(int position)
+	{
+		if(position < suggestionItems.size())
+		{
+			String addr = suggestionItems.get(position);
+			Location loc = suggestionLocations.get(position);
+			
+			Intent routeIntent = new Intent(RouteActivity.class.getName());
+			routeIntent.putExtra("address", addr);
+			routeIntent.putExtra("location", loc);
+			startActivity(routeIntent);
 		}
-		else {
-			try {
-				if (selectedURL.startsWith("webpage")) {
-					String newUrl = MixUtils.parseAction(selectedURL);
-					dataView.getContext().loadWebPage(newUrl, this);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+	}
+	
+	public void clickOnListView(int position)
+	{
+		Marker selectedMarker = position < selectedItem.size() ? selectedItem.get(position) : null;
+		if(selectedMarker == null || !(selectedMarker instanceof StopMarker))
+		{
+			Toast.makeText( this, getString(DataView.NO_WEBINFO_AVAILABLE), Toast.LENGTH_LONG ).show();
+		}
+		else
+		{
+			StopMarker sm = (StopMarker)selectedMarker;
+			this.loadStopDetailsDialog(sm.getTitle(), sm);
+		}
+	}
+
+	public void loadStopDetailsDialog(String title, StopMarker stop)
+	{
+		Dialog d = new Dialog(this)
+		{
+			public boolean onKeyDown(int keyCode, KeyEvent event) {
+				if (keyCode == KeyEvent.KEYCODE_BACK)
+					this.dismiss();
+				return true;
 			}
-		}
+		};
+		
+		d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		d.getWindow().setGravity(Gravity.CENTER);
+		d.setContentView(R.layout.stopdetailsdialog);
+		
+		TextView titleView = (TextView)d.findViewById(R.id.stopDetailDialogTitle);
+		titleView.setText(title);
+		
+		ExpandableListView list = (ExpandableListView)d.findViewById(R.id.stopDetailDialogRouteList);
+		
+		final Button button = (Button)d.findViewById(R.id.stopWalkRouteButton);
+		final double longitude = stop.getLongitude();
+		final double latitude = stop.getLatitude();
+		
+		final Location start = mixContext.getCurrentLocation();
+		
+        button.setOnClickListener(new View.OnClickListener() 
+        {
+            public void onClick(View v) 
+            {
+                Intent mapIntent = new Intent(org.mixare.maps.HelloGoogleMapsActivity.class.getName());
+                mapIntent.putExtra("startLocation", start);
+                mapIntent.putExtra("destLat", latitude);
+                mapIntent.putExtra("destLong", longitude);
+                
+                startActivity(mapIntent);
+            }
+        });
+		
+		List<Map<String, ?>> groupMaps = stop.getRouteList();
+		List<List<Map<String, ?>>> childMaps = stop.getRouteSubdataList();
+		
+		SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
+				this,
+				groupMaps,
+				R.layout.stopdetailsdialogitemroute,
+				new String[]{
+					"id",
+					"name"
+				},
+				new int[]{
+					R.id.routeNumber,
+					R.id.routeName
+				},
+				childMaps,
+				R.layout.stopdetailsdialogroutevariation,
+				new String[]{
+					"direction",
+					"name",
+					"times"
+				},
+				new int[]{
+					R.id.routeVariationDirection,
+					R.id.routeVariationName,
+					R.id.routeVariationTimes
+				}
+		);
+		
+		list.setAdapter(adapter);
+		
+		d.show();
+		
+		new StopTimesTask(adapter, stop).execute(groupMaps, childMaps);
 	}
-
+	
 	public static void createContextMenu(ImageView icon) {
 		icon.setOnCreateContextMenuListener(new OnCreateContextMenuListener() {				
 			public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -354,7 +419,6 @@ public class MixListView extends ListActivity {
 		/*define menu items*/
 		MenuItem item1 = menu.add(base, base, base, getString(DataView.MENU_ITEM_3)); 
 		MenuItem item2 = menu.add(base, base+1, base+1, getString(DataView.MENU_CAM_MODE));
-		MenuItem item3 = menu.add(base, base+2, base+2, "Add data source");
 		/*assign icons to the menu items*/
 		item1.setIcon(android.R.drawable.ic_menu_mapmode);
 		item2.setIcon(android.R.drawable.ic_menu_camera);

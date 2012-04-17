@@ -21,10 +21,13 @@ package org.mixare;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.mixare.data.DataHandler;
 import org.mixare.data.DataSourceList;
+import org.mixare.data.StopTimesTask;
 
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -33,12 +36,18 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.widget.ExpandableListView;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -133,7 +142,7 @@ public class MixMap extends MapActivity implements OnTouchListener{
 			if(marker.isActive()) {
 				GeoPoint point = new GeoPoint((int)(marker.getLatitude()*1E6), (int)(marker.getLongitude()*1E6));
 				item = new OverlayItem(point, "", "");
-				mixOverlay.addOverlay(item);
+				mixOverlay.addOverlay(item, marker);
 			}
 		}
 		//Solved issue 39: only one overlay with all marker instead of one overlay for each marker
@@ -144,7 +153,7 @@ public class MixMap extends MapActivity implements OnTouchListener{
 		myOverlay = new MixOverlay(this, drawable);
 
 		item = new OverlayItem(startPoint, "Your Position", "");
-		myOverlay.addOverlay(item);
+		myOverlay.addOverlay(item, null);
 		mapOverlays.add(myOverlay); 
 	}
 
@@ -251,7 +260,7 @@ public class MixMap extends MapActivity implements OnTouchListener{
 	private void handleIntent(Intent intent) {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			String query = intent.getStringExtra(SearchManager.QUERY);
-			doMixSearch(query);
+			getRouteSuggestions(query);
 		}
 	}
 
@@ -261,32 +270,12 @@ public class MixMap extends MapActivity implements OnTouchListener{
 		handleIntent(intent);
 	}
 
-	private void doMixSearch(String query) {
-		DataHandler jLayer = dataView.getDataHandler();
-		if (!dataView.isFrozen()) {
-			originalMarkerList = jLayer.getMarkerList();
-			MixListView.originalMarkerList = jLayer.getMarkerList();
-		}
-		markerList = new ArrayList<Marker>();
-
-		for(int i = 0; i < jLayer.getMarkerCount(); i++) {
-			Marker ma = jLayer.getMarker(i);
-
-			if (ma.getTitle().toLowerCase().indexOf(query.toLowerCase())!=-1){
-				markerList.add(ma);
-			}
-		}
-		if(markerList.size()==0){
-			Toast.makeText( this, getString(DataView.SEARCH_FAILED_NOTIFICATION), Toast.LENGTH_LONG ).show();
-		}
-		else{
-			jLayer.setMarkerList(markerList);
-			dataView.setFrozen(true);
-
-			finish();
-			Intent intent1 = new Intent(this, MixMap.class); 
-			startActivityForResult(intent1, 42);
-		}
+	private void getRouteSuggestions(String query) 
+	{
+		MixListView.setList(3);
+		Intent intent1 = new Intent(MixMap.this, MixListView.class); 
+		intent1.putExtra("address", query);
+		startActivityForResult(intent1, 42);
 	}
 
 	@Override
@@ -303,12 +292,87 @@ public class MixMap extends MapActivity implements OnTouchListener{
 		return false;
 	}
 
+	public void loadStopDetailsDialog(String title, StopMarker stop)
+	{
+		Dialog d = new Dialog(this)
+		{
+			public boolean onKeyDown(int keyCode, KeyEvent event) {
+				if (keyCode == KeyEvent.KEYCODE_BACK)
+					this.dismiss();
+				return true;
+			}
+		};
+		
+		d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		d.getWindow().setGravity(Gravity.CENTER);
+		d.setContentView(R.layout.stopdetailsdialog);
+		
+		TextView titleView = (TextView)d.findViewById(R.id.stopDetailDialogTitle);
+		titleView.setText(title);
+		
+		ExpandableListView list = (ExpandableListView)d.findViewById(R.id.stopDetailDialogRouteList);
+		
+		final Button button = (Button)d.findViewById(R.id.stopWalkRouteButton);
+		final double longitude = stop.getLongitude();
+		final double latitude = stop.getLatitude();
+		
+		final Location start = mixContext.getCurrentLocation();
+		
+        button.setOnClickListener(new View.OnClickListener() 
+        {
+            public void onClick(View v) 
+            {
+                Intent mapIntent = new Intent(org.mixare.maps.HelloGoogleMapsActivity.class.getName());
+                mapIntent.putExtra("startLocation", start);
+                mapIntent.putExtra("destLat", latitude);
+                mapIntent.putExtra("destLong", longitude);
+                
+                startActivity(mapIntent);
+            }
+        });
+		
+		List<Map<String, ?>> groupMaps = stop.getRouteList();
+		List<List<Map<String, ?>>> childMaps = stop.getRouteSubdataList();
+		
+		SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
+				this,
+				groupMaps,
+				R.layout.stopdetailsdialogitemroute,
+				new String[]{
+					"id",
+					"name"
+				},
+				new int[]{
+					R.id.routeNumber,
+					R.id.routeName
+				},
+				childMaps,
+				R.layout.stopdetailsdialogroutevariation,
+				new String[]{
+					"direction",
+					"name",
+					"times"
+				},
+				new int[]{
+					R.id.routeVariationDirection,
+					R.id.routeVariationName,
+					R.id.routeVariationTimes
+				}
+		);
+		
+		list.setAdapter(adapter);
+		
+		d.show();
+		
+		new StopTimesTask(adapter, stop).execute(groupMaps, childMaps);
+	}
 }
 
 
 class MixOverlay extends ItemizedOverlay<OverlayItem> {
 
 	private ArrayList<OverlayItem> overlayItems = new ArrayList<OverlayItem>();
+	private ArrayList<Marker> overlayMarkers = new ArrayList<Marker>();
 	private MixMap mixMap;
 
 	public MixOverlay(MixMap mixMap, Drawable marker){
@@ -331,26 +395,24 @@ class MixOverlay extends ItemizedOverlay<OverlayItem> {
 
 	@Override
 	protected boolean onTap(int index){
-		if (size() == 1)
+		if (size() == 1 || overlayMarkers.get(index) == null)
 			mixMap.startPointMsg();
-		else if (mixMap.getDataView().getDataHandler().getMarker(index).getURL() !=  null) {
-			String url = mixMap.getDataView().getDataHandler().getMarker(index).getURL();
-			Log.d("MapView", "opern url: "+url);
-			try {
-				if (url != null && url.startsWith("webpage")) {
-					String newUrl = MixUtils.parseAction(url);
-					mixMap.getDataView().getContext().loadWebPage(newUrl, mixMap.getMapContext());
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+		else
+		{
+			Marker m = overlayMarkers.get(index);
+			if(m instanceof StopMarker)
+			{
+				StopMarker sm = (StopMarker)m;
+				mixMap.loadStopDetailsDialog(sm.getTitle(), sm);
 			}
 		}
 
 		return true;
 	}
-
-	public void addOverlay(OverlayItem overlay) {
+	
+	public void addOverlay(OverlayItem overlay, Marker m) {
 		overlayItems.add(overlay);
+		overlayMarkers.add(m);
 		populate();
 	}
 }

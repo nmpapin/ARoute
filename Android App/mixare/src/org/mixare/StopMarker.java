@@ -9,7 +9,7 @@ import org.mixare.data.DataSource;
 
 import android.util.Log;
 
-public class BusStopMarker extends Marker {
+public class StopMarker extends Marker {
 
 	public static final int MAX_OBJECTS = 25;
 	public static final String StopDetails = "StopDetailsDialog";
@@ -17,7 +17,7 @@ public class BusStopMarker extends Marker {
 	private Route[] mRoutes;
 	private int mStopID;
 	
-	public BusStopMarker(int id, String title, double latitude, double longitude, double altitude, Route[] routes, DataSource datasource) 
+	public StopMarker(int id, String title, double latitude, double longitude, double altitude, Route[] routes, DataSource datasource) 
 	{
 		super(title, latitude, longitude, altitude, null, datasource);
 		
