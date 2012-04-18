@@ -39,10 +39,15 @@ public class DataInterface
 	// INTERFACE METHODS
 	//
 	/**
-	 * Closes the database.
+	 * Closes the data interface.
 	 * Important to do this when you are done using the data interface.
 	 */
 	public void close(){}
+	
+	/**
+	 * Opens the data interface.
+	 */
+	public void open(){}
 	
 	/**
 	 * Returns the distance to the stop denoted by the given id from the given coordinates.
@@ -83,7 +88,7 @@ public class DataInterface
 				JSONObject station = arr.getJSONObject(i);
 				Map<String, Object> m = new HashMap<String, Object>();
 				m.put("stop_id", station.get("stop_id"));
-				m.put("time", station.get("time"));
+				m.put("time", Time.valueOf(station.getString("time")));
 				ret.add(m);
 			}
 			
@@ -116,7 +121,7 @@ public class DataInterface
 				JSONObject station = arr.getJSONObject(i);
 				Map<String, Object> m = new HashMap<String, Object>();
 				m.put("stop_id", station.get("stop_id"));
-				m.put("time", station.get("time"));
+				m.put("time", Time.valueOf(station.getString("time")));
 				ret.add(m);
 			}
 			
@@ -151,7 +156,7 @@ public class DataInterface
 				JSONObject stop = arr.getJSONObject(i);
 				Map<String, Object> m = new HashMap<String, Object>();
 				m.put("stop_id", stop.get("id"));
-				m.put("name", stop.get("time"));
+				m.put("name", stop.get("name"));
 				m.put("latitude", stop.get("latitude"));
 				m.put("longitude", stop.get("longitude"));
 				m.put("distance", stop.get("distance"));
@@ -190,7 +195,7 @@ public class DataInterface
 				m.put("marta_id", s.get("marta_id"));
 				m.put("name", s.get("name"));
 				m.put("direction", s.get("direction"));
-				m.put("next_time", s.get("next_time"));
+				m.put("next_time", Time.valueOf(s.getString("next_time")));
 				ret.add(m);
 			}
 			
