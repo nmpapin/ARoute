@@ -97,6 +97,12 @@ public class MartaRouting
 		possibleStartStops = Stop.getStopsNear(startLat, startLng, NEARBY_DISTANCE);
 		possibleDestStops = Stop.getStopsNear(destLat, destLng, NEARBY_DISTANCE);
 		calculateRoute();
+		//dbi.close();
+		//dbi = null;
+	}
+	
+	public void close()
+	{
 		dbi.close();
 		dbi = null;
 	}
@@ -256,12 +262,63 @@ public class MartaRouting
 		return routes.get(0);
 	}
 	
+	/**
+	 * Return the closest Destination stop found
+	 * 
+	 * @return the closest timestop routed to
+	 */
+	public TimeStop getClosestDestStop()
+	{
+		ArrayList<TimeStop> stops = tsg.getEndStops();
+		TimeStop closest = null;
+		double closestDistance = Double.MAX_VALUE;
+		
+		for(TimeStop t : stops)
+		{
+			double dist = t.distanceToStop(startLat, startLng);
+			if (dist < closestDistance)
+			{
+				closest = t;
+				closestDistance = dist;
+			}
+		}
+		return closest;
+	}
+	
+	/**
+	 * Traces a TimeStop back through the TimeStopGraph
+	 * 
+	 * @param end
+	 * @return
+	 */
+	public TimeStop traceBackToStart(TimeStop end)
+	{
+		ArrayList<Edge> in = tsg.inEdges.get(end.tStopID);
+		if(in == null)
+		{
+			logPrintImportant("No in edges existed for TS: "+end);
+		}
+		while (in != null || in.size() != 0)
+		{
+			end = in.get(0).t1; //get the first in edge
+			in = tsg.inEdges.get(end.tStopID);
+		}
+			
+		return end;
+	}
+	
 	public boolean checkTimeStopGraph()
 	{
 		boolean pass = true;
 		
 		//check destination stops are actually destination stops
 		boolean allDests = true;
+		if (tsg.getEndStops().size() == 0)
+		{
+			logPrintImportant("No Destinations Exist");
+			return false;
+		}
+			
 		for(TimeStop dest : tsg.getEndStops())
 		{
 			if (isPossibleDestStop(dest))
@@ -269,13 +326,19 @@ public class MartaRouting
 			else
 			{
 				allDests = false;
-				verboseLogPrint("TimeStop "+dest.tStopID+" failed as destination");
+				pass = false;
+				logPrintImportant("TimeStop "+dest.tStopID+" failed as destination");
 			}
 		}
 		if (allDests)
 			logPrint("All Destinations Verified");
 		
 		boolean allStarts = true;
+		if (tsg.getStartStops().size() == 0)
+		{
+			logPrintImportant("No Starts Exist");
+			return false;
+		}
 		for(TimeStop start : tsg.getStartStops())
 		{
 			if (isPossibleDestStop(start))
@@ -283,11 +346,31 @@ public class MartaRouting
 			else
 			{
 				allDests = false;
-				verboseLogPrint("TimeStop "+start.tStopID+" failed as destination");
+				pass = false;
+				logPrintImportant("TimeStop "+start.tStopID+" failed as destination");
 			}
 		}
 		if (allStarts)
 			logPrint("All Destinations Verified");
+		
+		boolean traceback = false;
+		TimeStop closest = this.getClosestDestStop();
+		TimeStop start = traceBackToStart(closest);
+		
+		if(closest == start)
+		{
+			logPrintImportant("Traceback stayed the same");
+		}
+		if(isPossibleDestStop(start))
+		{
+			traceback = true;
+			logPrint("Traceback worked");
+		}
+		else
+		{
+			pass = false;
+			logPrintImportant("Could not trace back to a start");
+		}
 		
 		logPrintImportant("checking graph passed = "+pass);
 		return pass;
@@ -450,7 +533,10 @@ public class MartaRouting
 						break;
 					
 					if (enqueue(t2))
+					{
 						iterations++; //increase iteration for each new enqueue
+						tsg.addNewEdge(ts,t2, r);
+					}
 					
 					if (solutions >= maxSolutions)
 					{

@@ -83,12 +83,17 @@ public class TimeStopGraph
 		return edge.t1;
 	}
 
+	public void addNewEdge(TimeStop ts1, TimeStop ts2, Route r)
+	{
+		new Edge(ts1, ts2, r);
+	}
+	
 	public class Edge
 	{
 		TimeStop t1;
 		TimeStop t2;
 		Route r;
-		int weight;
+		long weight;
 		
 		//Instead of making intelligent object creation
 		//Just use .contains to check if already
@@ -98,6 +103,8 @@ public class TimeStopGraph
 			this.t2 = t2;
 			this.r = r;
 			addEdge();
+			
+			//weight = t2.time
 		}
 		
 		/**
@@ -125,6 +132,8 @@ public class TimeStopGraph
 				timeEdges.add(this);
 				
 				//Add t2 to t1's outgoing edges
+				if (!outEdges.contains(t1.tStopID))
+					outEdges.put(t1.tStopID, new ArrayList<Edge>());
 				ArrayList<Edge> t1out = outEdges.get(t1.tStopID);
 				if (!t1out.contains(this))
 				{
@@ -132,6 +141,8 @@ public class TimeStopGraph
 				}
 				
 				//Add t1 to t2's incoming edges
+				if (!inEdges.contains(t2.tStopID))
+					inEdges.put(t2.tStopID, new ArrayList<Edge>());
 				ArrayList<Edge> t2in = inEdges.get(t2.tStopID);
 				if (!t2in.contains(this))
 				{
