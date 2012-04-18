@@ -73,6 +73,7 @@ public class RouteActivity extends MapActivity {
         List<RoutePoint> route = mr.getRoute();
         Routing router = new Routing();
         
+        
         //Bus locations
         double bus1Lat = 33.781197;
         double bus1Lng = -84.398003;

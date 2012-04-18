@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import android.text.format.Time;
+import android.util.Log;
 
 public class TimeStopGraph
 {
@@ -139,6 +140,8 @@ public class TimeStopGraph
 				{
 					t1out.add(this);
 				}
+				
+				Log.i("TRARARARAR", "HERE WE GO!");
 				
 				//Add t1 to t2's incoming edges
 				if (!inEdges.contains(t2.tStopID))
