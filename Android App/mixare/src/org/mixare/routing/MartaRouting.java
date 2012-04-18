@@ -97,14 +97,13 @@ public class MartaRouting
 		possibleStartStops = Stop.getStopsNear(startLat, startLng, NEARBY_DISTANCE);
 		possibleDestStops = Stop.getStopsNear(destLat, destLng, NEARBY_DISTANCE);
 		calculateRoute();
-		//dbi.close();
-		//dbi = null;
+
+		dbi.close();
+		dbi = null;
 	}
 	
 	public void close()
 	{
-		dbi.close();
-		dbi = null;
 	}
 	
 	public static MartaRouting MartaRoutingTestShort()
@@ -298,7 +297,7 @@ public class MartaRouting
 		{
 			logPrintImportant("No in edges existed for TS: "+end);
 		}
-		while (in != null || in.size() != 0)
+		while (in != null && in.size() != 0)
 		{
 			end = in.get(0).t1; //get the first in edge
 			in = tsg.inEdges.get(end.tStopID);
