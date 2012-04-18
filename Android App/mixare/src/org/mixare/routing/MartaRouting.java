@@ -307,6 +307,37 @@ public class MartaRouting
 		return end;
 	}
 	
+	public ArrayList<TimeStop> filteredEndStops()
+	{
+		ArrayList<TimeStop> stops11 = tsg.getEndStops();
+		ArrayList<TimeStop> stops12 = new ArrayList<TimeStop>();
+		ArrayList<TimeStop> stops13 = new ArrayList<TimeStop>();
+		
+		for(TimeStop ts1 : stops11)
+		{
+			if(isPossibleDestStop(ts1))
+			{
+				stops12.add(ts1);
+			}
+		}
+		
+		ArrayList<TimeStop> finalStops = new ArrayList<TimeStop>();
+		TimeStop x;
+		for(TimeStop ts2 : stops12)
+		{
+			x = traceBackToStart(ts2);
+			Log.i("Filtered Stops",ts2+" traced to "+x);
+			
+			if (!(ts2.equals(x)))
+			{
+				stops13.add(ts2);
+				Log.i("Filtered Stops", "Determined "+ts2+" is viable endStop");
+			}
+		}
+		
+		return stops13;
+	}
+	
 	public boolean checkTimeStopGraph()
 	{
 		boolean pass = true;
@@ -319,7 +350,7 @@ public class MartaRouting
 			return false;
 		}
 		
-		ArrayList<TimeStop> stops = tsg.getEndStops();
+		ArrayList<TimeStop> stops = filteredEndStops();
 		
 		for(TimeStop dest : stops)
 		{
