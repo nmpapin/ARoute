@@ -64,6 +64,12 @@ public class TimeStop extends Stop
 		else
 			return new TimeStop(tstopid, stopid, stoptime, latitude, longitude);
 	}
+
+	public Time minsFromTime(int min)
+	{
+		long ms = this.time.getTime()+min*60*1000;
+		return new Time(ms);
+	}
 	
 	/**
 	 * Only way to create a TimeStop to make sure no duplicates

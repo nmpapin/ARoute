@@ -97,6 +97,7 @@ public class MartaRouting
 		possibleStartStops = Stop.getStopsNear(startLat, startLng, NEARBY_DISTANCE);
 		possibleDestStops = Stop.getStopsNear(destLat, destLng, NEARBY_DISTANCE);
 		calculateRoute();
+		checkTimeStopGraph();
 
 		dbi.close();
 		dbi = null;
@@ -317,28 +318,34 @@ public class MartaRouting
 			logPrintImportant("No Destinations Exist");
 			return false;
 		}
-			
-		for(TimeStop dest : tsg.getEndStops())
+		
+		ArrayList<TimeStop> stops = tsg.getEndStops();
+		
+		for(TimeStop dest : stops)
 		{
 			if (isPossibleDestStop(dest))
-				verboseLogPrint("TimeStop "+dest.tStopID+" verified as destination");
+				verboseLogPrint("TimeStop "+dest+" verified as destination");
 			else
 			{
 				allDests = false;
 				pass = false;
-				logPrintImportant("TimeStop "+dest.tStopID+" failed as destination");
+				logPrintImportant("TimeStop "+dest+" failed as destination");
 			}
 		}
+		
 		if (allDests)
 			logPrint("All Destinations Verified");
 		
 		boolean allStarts = true;
-		if (tsg.getStartStops().size() == 0)
+		
+		stops = tsg.getStartStops();
+		if (stops.size() == 0)
 		{
 			logPrintImportant("No Starts Exist");
 			return false;
 		}
-		for(TimeStop start : tsg.getStartStops())
+		
+		for(TimeStop start : stops)
 		{
 			if (isPossibleDestStop(start))
 				verboseLogPrint("TimeStop "+start.tStopID+" verified as destination");
@@ -480,6 +487,8 @@ public class MartaRouting
 		{
 			ts.enqueued = true;
 			ts.isDestStop = true; //double check to be safe
+			Log.i("Set Destination Stop", ts.toString());
+			
 			solutions++;
 			
 			logPrintImportant("Found Destination Stop: "+ts);
@@ -525,11 +534,14 @@ public class MartaRouting
 			for(Route r : ts.getRoutesLeaving())
 			{
 				int count = 0;
-				for (TimeStop t2 : r.getFollowingStops(ts))
+				ArrayList<TimeStop> stops = r.getFollowingStops(ts); 
+				for (TimeStop t2 : stops)
 				{
 					//TODO: check that breaks inner loop only
-					if(t2 == null || count > depth-1)
+					if(count > depth-1)
 						break;
+					if (t2 == null || ts == t2)
+						continue;
 					
 					if (enqueue(t2))
 					{
@@ -583,7 +595,6 @@ public class MartaRouting
 		{
 			if (ts.isSameStopIgnoreTime(s))
 			{
-				ts.isDestStop = true;
 				return true;
 			}
 		}

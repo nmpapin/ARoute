@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import android.text.format.Time;
+import android.util.Log;
 
 public class TimeStopGraph
 {
@@ -41,7 +42,10 @@ public class TimeStopGraph
 		for(TimeStop ts : timeNodes)
 		{
 			if (ts.isDestStop)
+			{
 				ends.add(ts);
+				logPrint(ts+" listed as end point");
+			}
 		}
 		return ends;
 	}
@@ -55,22 +59,6 @@ public class TimeStopGraph
 				starts.add(ts);
 		}
 		return starts;
-	}
-	
-	/**
-	 * Add timestop node
-	 * 
-	 * @param ts
-	 * @return true if not already in list, false if already existed
-	 */
-	public boolean addTimeStop(TimeStop ts)
-	{
-		if (!(timeNodes.contains(ts)))
-		{
-			timeNodes.add(ts);
-			return true;
-		}
-		return false;
 	}
 
 	public ArrayList<Edge> previousEdges(TimeStop end)
@@ -186,5 +174,10 @@ public class TimeStopGraph
 			this.route = route;
 			weight = origin.stoptimeInMins - (arrivalTime.hour*60+arrivalTime.minute);
 		}
+	}
+	
+	public void logPrint(String str)
+	{
+		Log.i("TimeStopGraph", str);
 	}
 }
