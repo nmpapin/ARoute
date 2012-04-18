@@ -234,7 +234,6 @@
 		);
 		
 		$start = $stops[0];
-		unset($stops[0]);
 		
 		$start_time = $database->getResult
 		(
@@ -266,9 +265,11 @@
 		}
 		
 		$time = $start_time['stop_time'];
+		$stops[0]['time'] = $time;
+		unset($stops[0]['id']);
 		
 		$ret_times = array();
-		foreach($stops AS $key=>$stop)
+		foreach($i = 1; $i < count($stops); $i++)
 		{
 			$start_time = $database->getResult
 			(
@@ -300,8 +301,8 @@
 			}
 			
 			$time = $start_time['stop_time'];
-			$stops[$key]['time'] = $time;
-			unset($stops[$key]['id']);
+			$stops[$i]['time'] = $time;
+			unset($stops[$i]['id']);
 		}
 		
 		return array_values($stops);
