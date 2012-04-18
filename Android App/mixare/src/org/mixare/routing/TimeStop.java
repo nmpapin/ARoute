@@ -139,9 +139,9 @@ public class TimeStop extends Stop
 		return new GeoPoint((int) (lat*1e6), (int) (lng*1e6));
 	}
 	
-	public static TimeStop getStop(int id)
+	public static TimeStop getStop(int tStopID)
 	{
-		return stopGraph.get(id);
+		return stopGraph.get(tStopID);
 	}
 	
 	/**
@@ -153,6 +153,14 @@ public class TimeStop extends Stop
 	public ArrayList<Stop> getStopsNearby(int distance)
 	{
 		return super.getStopsNear(lat, lng, distance);
+	}
+	
+	/**
+	 * 
+	 */
+	public ArrayList<Route> getRoutesLeaving()
+	{
+		return super.getRoutesLeaving(time);
 	}
 	
 	public boolean equals(Object o)

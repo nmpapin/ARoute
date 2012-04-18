@@ -1,6 +1,8 @@
 package org.mixare.routing;
 
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +15,8 @@ public class Stop
 	protected int stopid;
 	protected double lat, lng;
 	protected String name;
+	
+	static Hashtable<Integer, Boolean> stations = new Hashtable<Integer, Boolean>(600);
 	
 	public Stop(int stopid, double lat, double lng, String name)
 	{
@@ -71,74 +75,7 @@ public class Stop
 		return "Stop id: +"+stopid+" Lat: "+lat+" Lng: "+lng+" Name: "+name;
 	}
 	
-	//TODO: make use parseStopMap
-	/**
-	 * Parse a database query map result into a list of stops
-	 * 
-	 * @param stopMap
-	 * @return an ArrayList of nearby Stops
-	 * @throws StopException
-	 */
-	public static ArrayList<Stop> parseStopList(List<Map<String, Object>> stopMap) throws StopException
-	{
-		ArrayList<Stop> stops = new ArrayList<Stop>();
-		
-		for(Map m : stopMap)
-		{
-			stops.add(parseStopMap(m));
-			/*try {
-				int id = Integer.parseInt(m.get("stop_id").toString());
-				double lat = Double.parseDouble(m.get("latitude").toString());
-				double lng = Double.parseDouble(m.get("latitude").toString());
-				
-				try {
-					String name = m.get("name").toString();
-					stops.add(new Stop(id, lat, lng, name));
-				}
-				catch (NullPointerException npe) {
-					Log.i("Routing", "Couldn't parse stop name");
-					stops.add(new Stop(id,lat,lng));
-				}
-			}
-			catch (NullPointerException npe) {
-				throw new StopException();
-			}
-			catch (NumberFormatException nfe) {
-				throw new StopException();
-			}*/
-		}
-		
-		return stops;
-	}
 	
-	public static Stop parseStopMap(Map<String, Object> m) throws StopException
-	{
-		
-		try {
-			int id = Integer.parseInt(m.get("stop_id").toString());
-			double lat = Double.parseDouble(m.get("latitude").toString());
-			double lng = Double.parseDouble(m.get("latitude").toString());
-			
-			try {
-				String name = m.get("name").toString();
-				Stop s = new Stop(id, lat, lng, name);
-				logPrint("Parsed stop: "+s.toString());
-				return s;
-			}
-			catch (NullPointerException npe) {
-				logPrintMinor("Couldn't parse stop name");
-				Stop s = new Stop(id,lat,lng);
-				logPrint("Parsed Stop: "+s.toString());
-				return s;
-			}
-		}
-		catch (NullPointerException npe) {
-			throw new StopException();
-		}
-		catch (NumberFormatException nfe) {
-			throw new StopException();
-		}
-	}
 		/**
 		 * Returns all stops within
 		 * 
@@ -173,6 +110,75 @@ public class Stop
 			}
 			
 			return null;
+		}
+		
+		//TODO: make use parseStopMap
+		/**
+		 * Parse a database query map result into a list of stops
+		 * 
+		 * @param stopMap
+		 * @return an ArrayList of nearby Stops
+		 * @throws StopException
+		 */
+		public static ArrayList<Stop> parseStopList(List<Map<String, Object>> stopMap) throws StopException
+		{
+			ArrayList<Stop> stops = new ArrayList<Stop>();
+			
+			for(Map m : stopMap)
+			{
+				stops.add(parseStopMap(m));
+				/*try {
+					int id = Integer.parseInt(m.get("stop_id").toString());
+					double lat = Double.parseDouble(m.get("latitude").toString());
+					double lng = Double.parseDouble(m.get("latitude").toString());
+					
+					try {
+						String name = m.get("name").toString();
+						stops.add(new Stop(id, lat, lng, name));
+					}
+					catch (NullPointerException npe) {
+						Log.i("Routing", "Couldn't parse stop name");
+						stops.add(new Stop(id,lat,lng));
+					}
+				}
+				catch (NullPointerException npe) {
+					throw new StopException();
+				}
+				catch (NumberFormatException nfe) {
+					throw new StopException();
+				}*/
+			}
+			
+			return stops;
+		}
+		
+		public static Stop parseStopMap(Map<String, Object> m) throws StopException
+		{
+			
+			try {
+				int id = Integer.parseInt(m.get("stop_id").toString());
+				double lat = Double.parseDouble(m.get("latitude").toString());
+				double lng = Double.parseDouble(m.get("latitude").toString());
+				
+				try {
+					String name = m.get("name").toString();
+					Stop s = new Stop(id, lat, lng, name);
+					logPrint("Parsed stop: "+s.toString());
+					return s;
+				}
+				catch (NullPointerException npe) {
+					logPrintMinor("Couldn't parse stop name");
+					Stop s = new Stop(id,lat,lng);
+					logPrint("Parsed Stop: "+s.toString());
+					return s;
+				}
+			}
+			catch (NullPointerException npe) {
+				throw new StopException();
+			}
+			catch (NumberFormatException nfe) {
+				throw new StopException();
+			}
 		}
 		
 		public static int parseStopID(Map<String, Object> m) throws StopException
@@ -244,4 +250,18 @@ public class Stop
 		{
 			Log.i("StopMinor", msg);
 		}
+
+		public ArrayList<Route> getRoutesLeaving(Time time)
+		{
+			return Route.getRoutesLeaving(stopid, time);
+		}
+		
+		//public static boolean isStation(int stopid)
+		//{
+		//	if (stations.containsKey(stopid))
+		//		return stations.get(stopid);
+		//	else
+		//		//TODO:
+		//
+		//}
 }
