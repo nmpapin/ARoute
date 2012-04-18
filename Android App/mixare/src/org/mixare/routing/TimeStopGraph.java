@@ -22,6 +22,17 @@ public class TimeStopGraph
 		
 	}
 	
+
+	public ArrayList<Edge> previousEdges(TimeStop end)
+	{
+		return inEdges.get(end);
+	}
+	
+	public TimeStop previousStop(Edge edge)
+	{
+		return edge.t1;
+	}
+
 	public class Edge
 	{
 		TimeStop t1;
