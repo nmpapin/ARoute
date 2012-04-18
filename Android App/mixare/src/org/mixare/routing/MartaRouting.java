@@ -205,11 +205,23 @@ public class MartaRouting
 					TimeStop p = tsg.previousStop(e);
 					RoutePoint rp = routes.get(rb).get(routes.get(rb).size() - 1);
 					
+					String type = "";
+					Integer routeType = Integer.getInteger(e.r.martaID);
+					if(routeType == null)
+					{
+						type = "rail";
+					}
+					else
+					{
+						type = "bus";
+					}
+					
+					
 					routes.get(rb).add(new RoutePoint
 					(
 						p.lat, 
 						p.lng, 
-						"bus", 
+						type, 
 						"Take Route " + e.r.martaID + " from stop " + p.name + " to " + d.name + ".", 
 						"Approximately " + distance(p.lat, p.lng, d.lat, d.lng) + " kilometers.", 
 						p.time, 
