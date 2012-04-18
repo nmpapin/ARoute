@@ -97,6 +97,7 @@ public class MartaRouting
 		possibleStartStops = Stop.getStopsNear(startLat, startLng, NEARBY_DISTANCE);
 		possibleDestStops = Stop.getStopsNear(destLat, destLng, NEARBY_DISTANCE);
 		calculateRoute();
+		checkTimeStopGraph();
 
 		dbi.close();
 		dbi = null;
@@ -309,6 +310,37 @@ public class MartaRouting
 		return end;
 	}
 	
+	public ArrayList<TimeStop> filteredEndStops()
+	{
+		ArrayList<TimeStop> stops11 = tsg.getEndStops();
+		ArrayList<TimeStop> stops12 = new ArrayList<TimeStop>();
+		ArrayList<TimeStop> stops13 = new ArrayList<TimeStop>();
+		
+		for(TimeStop ts1 : stops11)
+		{
+			if(isPossibleDestStop(ts1))
+			{
+				stops12.add(ts1);
+			}
+		}
+		
+		ArrayList<TimeStop> finalStops = new ArrayList<TimeStop>();
+		TimeStop x;
+		for(TimeStop ts2 : stops12)
+		{
+			x = traceBackToStart(ts2);
+			Log.i("Filtered Stops",ts2+" traced to "+x);
+			
+			if (!(ts2.equals(x)))
+			{
+				stops13.add(ts2);
+				Log.i("Filtered Stops", "Determined "+ts2+" is viable endStop");
+			}
+		}
+		
+		return stops13;
+	}
+	
 	public boolean checkTimeStopGraph()
 	{
 		boolean pass = true;
@@ -320,28 +352,34 @@ public class MartaRouting
 			logPrintImportant("No Destinations Exist");
 			return false;
 		}
-			
-		for(TimeStop dest : tsg.getEndStops())
+		
+		ArrayList<TimeStop> stops = filteredEndStops();
+		
+		for(TimeStop dest : stops)
 		{
 			if (isPossibleDestStop(dest))
-				verboseLogPrint("TimeStop "+dest.tStopID+" verified as destination");
+				verboseLogPrint("TimeStop "+dest+" verified as destination");
 			else
 			{
 				allDests = false;
 				pass = false;
-				logPrintImportant("TimeStop "+dest.tStopID+" failed as destination");
+				logPrintImportant("TimeStop "+dest+" failed as destination");
 			}
 		}
+		
 		if (allDests)
 			logPrint("All Destinations Verified");
 		
 		boolean allStarts = true;
-		if (tsg.getStartStops().size() == 0)
+		
+		stops = tsg.getStartStops();
+		if (stops.size() == 0)
 		{
 			logPrintImportant("No Starts Exist");
 			return false;
 		}
-		for(TimeStop start : tsg.getStartStops())
+		
+		for(TimeStop start : stops)
 		{
 			if (isPossibleDestStop(start))
 				verboseLogPrint("TimeStop "+start.tStopID+" verified as destination");
@@ -483,6 +521,8 @@ public class MartaRouting
 		{
 			ts.enqueued = true;
 			ts.isDestStop = true; //double check to be safe
+			Log.i("Set Destination Stop", ts.toString());
+			
 			solutions++;
 			
 			logPrintImportant("Found Destination Stop: "+ts);
@@ -528,14 +568,18 @@ public class MartaRouting
 			for(Route r : ts.getRoutesLeaving())
 			{
 				int count = 0;
-				for (TimeStop t2 : r.getFollowingStops(ts))
+				ArrayList<TimeStop> stops = r.getFollowingStops(ts); 
+				for (TimeStop t2 : stops)
 				{
 					//TODO: check that breaks inner loop only
+						
 					if(t2.equals(ts))
 						continue;
 					
 					if(t2 == null || count > depth-1)
 						break;
+					if (t2 == null || ts == t2)
+						continue;
 					
 					if (enqueue(t2))
 					{

@@ -510,8 +510,6 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 			
 			mr.logPrint("Dest: "+mr.destLat+", "+mr.destLng);
 			
-			mr.checkTimeStopGraph();
-			
 			break;
 			/*List view*/
 		case 2:
