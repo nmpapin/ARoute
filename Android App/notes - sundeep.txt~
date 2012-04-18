@@ -5,7 +5,8 @@ MartaRouting
 	getFollowingStops(routeid, timestopid) - only ones that are closer to destination
 
 
-
+Map
+	show current location with updates
 
 
 

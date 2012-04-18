@@ -157,7 +157,7 @@ public class MartaRouting
 	 * Will return the route after it has been calculated
 	 * @return
 	 */
-	public ArrayList<RoutePoint> getRoute()
+	public ArrayList<RoutePoint> getRoute(TimeStopGraph graph)
 	{
 		return null;
 	}

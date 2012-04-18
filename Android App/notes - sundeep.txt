@@ -16,7 +16,8 @@ Map
 ***************************TODO:
 Database
 
-
+TimeStops
+	add day to time parameter
 
 
 
