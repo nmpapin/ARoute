@@ -1,43 +1,0 @@
-10
-
-dir
-4
-http://android-imagedownloader.googlecode.com/svn/trunk/res
-http://android-imagedownloader.googlecode.com/svn
-
-
-
-2010-07-14T22:13:39.818361Z
-2
-gilles.debunne@android.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-fc9de0a1-52c5-a5ee-6291-b7f7f46da760
-
-values
-dir
-
-drawable-hdpi
-dir
-
-drawable-ldpi
-dir
-
-drawable-mdpi
-dir
-
-layout
-dir
-
