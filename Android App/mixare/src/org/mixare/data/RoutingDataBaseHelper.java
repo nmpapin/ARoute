@@ -19,6 +19,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
+import android.util.Log;
 
 import java.sql.Time;
 
@@ -151,7 +152,7 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 				"SELECT latitude, longitude " +
 				"FROM stop " +
 				"WHERE _id = " + stop +
-				" ORDER BY distance ASC;", 
+				";", 
 				new String[0]
 		);
 		
@@ -230,14 +231,14 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
             	if(t.getCount() > 0)
             	{
             		t.moveToFirst();
-            		m.put("next_time", Time.valueOf(route.getString(route.getColumnIndex("stop_time"))));
+            		m.put("next_time", Time.valueOf(t.getString(t.getColumnIndex("stop_time"))));
             		ret.add(m);
             	}
             }
             else
             {
             	t.moveToFirst();
-        		m.put("next_time", Time.valueOf(route.getString(route.getColumnIndex("stop_time"))));
+        		m.put("next_time", Time.valueOf(t.getString(t.getColumnIndex("stop_time"))));
         		ret.add(m);
             }
             t.close();
@@ -276,7 +277,7 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 		Cursor stops = mDataBase.rawQuery
 		(
 			"SELECT rs._id, rs.stop_id, s.name, s.latitude, s.longitude " +
-			"FROM route_stop AS rs" +
+			"FROM route_stop AS rs " +
 			"JOIN stop AS s ON rs.stop_id = s._id " +
 			"WHERE rs.route_order >= " + orderNum +
 			" AND rs.route_var_id = " + route + 
