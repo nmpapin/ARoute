@@ -183,6 +183,6 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 			new String[0]
 		);
 		
-		
+		return null;
 	}
 }
