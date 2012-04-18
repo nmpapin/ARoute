@@ -169,7 +169,7 @@ public class DataInterface
 	/**
 	 * Returns a list of the routes leaving the given stop after a given time.
 	 */
-	public static JSONArray getRoutesLeaving(int stop, Time time)
+	public List<Map<String, Object>> getRoutesLeaving(int stop, Time time)
 	{
 		String url = DATA_URL_BASE + "get_routes_leaving.php?stop=" + stop;
 		if(time != null)
@@ -177,26 +177,45 @@ public class DataInterface
 			url += "&time=" + time.format("%T");
 		}
 		
-		try 
+		try
 		{
-			return new JSONArray(getURLContents(url));
+			List<Map<String, Object>> ret = new ArrayList<Map<String, Object>>();
+			
+			JSONArray arr = new JSONArray(getURLContents(url));
+			for(int i = 0; i < arr.length(); i++)
+			{
+				JSONObject s = arr.getJSONObject(i);
+				Map<String, Object> m = new HashMap<String, Object>();
+				m.put("route_id", s.get("id"));
+				m.put("marta_id", s.get("marta_id"));
+				m.put("name", s.get("name"));
+				m.put("direction", s.get("direction"));
+				m.put("next_time", s.get("next_time"));
+				ret.add(m);
+			}
+			
+			return ret;
 		} 
 		catch (JSONException e) 
 		{
-			return null;
+			return new ArrayList<Map<String, Object>>(0);
 		}
 	}
 	
 	/**
 	 * Returns the coordinates of the given stop in a JSONObject as "latitude" and "longitude".
 	 */
-	public static JSONObject getStopCoordinates(int stop)
+	public Location getStopCoordinates(int stop)
 	{
 		String url = DATA_URL_BASE + "get_stop_coords.php?stop=" + stop;
 		
 		try 
 		{
-			return new JSONObject(getURLContents(url));
+			JSONObject jo = new JSONObject(getURLContents(url));
+			Location loc = new Location("ARouteDataInterface");
+			loc.setLatitude(jo.getDouble("latitude"));
+			loc.setLongitude(jo.getDouble("longitude"));
+			return loc;
 		} 
 		catch (JSONException e) 
 		{
@@ -207,7 +226,7 @@ public class DataInterface
 	/**
 	 * Returns whether or not the given stop is a "station".
 	 */
-	public static boolean isStation(int stop)
+	public boolean isStation(int stop)
 	{
 		String url = DATA_URL_BASE + "is_station.php?stop=" + stop;
 		
