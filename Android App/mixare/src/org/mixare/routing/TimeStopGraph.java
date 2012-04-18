@@ -19,7 +19,8 @@ public class TimeStopGraph
 	
 	public TimeStopGraph()
 	{
-		
+		timeNodes = new ArrayList<TimeStop>();
+		timeEdges = new ArrayList<Edge>();
 	}
 	
 	public void reset()
