@@ -4,6 +4,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +16,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.format.Time;
+import java.sql.Time;
 
 public class RoutingDataBaseHelper extends SQLiteOpenHelper 
 {
@@ -150,7 +152,9 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 		);
 		
 		cur.moveToFirst();
-		return distance(lat, lng, cur);
+		double d = distance(lat, lng, cur);
+		cur.close();
+		return d;
 	}
 	
 	private double distance(double lat, double lng, Cursor cur)
@@ -172,7 +176,9 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 	
 	public List<Map<String, Object>> getRoutesLeaving(int stop, String time)
 	{
-		Cursor cur = mDataBase.rawQuery
+		List<Map<String, Object>> ret = new ArrayList<Map<String, Object>>();
+		
+		Cursor route = mDataBase.rawQuery
 		(
 			"SELECT DISTINCT rv.id, r.marta_id, r.name, rv.direction, rs.id AS route_stop_id " +
 			"FROM route AS r " +
@@ -183,6 +189,59 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 			new String[0]
 		);
 		
-		return null;
+		route.moveToFirst();
+		while(route.isAfterLast() == false) 
+		{
+			Map<String, Object> m = new HashMap<String, Object>();
+			m.put("route_id", route.getInt(route.getColumnIndex("id")));
+			m.put("marta_id", route.getString(route.getColumnIndex("marta_id")));
+			m.put("name", route.getString(route.getColumnIndex("name")));
+			m.put("direction", route.getString(route.getColumnIndex("direction")));
+			
+            Cursor t = mDataBase.rawQuery
+            (
+        		"SELECT stop_time " +
+    			"FROM route_time " +
+    			"WHERE route_stop_id = " + route.getInt(route.getColumnIndex("route_stop_id")) + 
+    			" AND stop_time >= '" + time + "' " +
+    			"ORDER BY stop_time ASC " +
+    			"LIMIT 1;", 
+            	new String[0]
+            );			
+			
+            if(t.getCount() < 1)
+            {
+            	t.close();
+            	t = mDataBase.rawQuery
+                (
+	        		"SELECT stop_time " +
+	    			"FROM route_time " +
+	    			"WHERE route_stop_id = " + route.getInt(route.getColumnIndex("route_stop_id")) + 
+	    			" AND stop_time >= '00:00:00' " +
+	    			"ORDER BY stop_time ASC " +
+	    			"LIMIT 1;", 
+	            	new String[0]
+                );
+            	
+            	if(t.getCount() > 0)
+            	{
+            		t.moveToFirst();
+            		m.put("next_time", Time.valueOf(route.getString(route.getColumnIndex("stop_time"))));
+            		ret.add(m);
+            	}
+            }
+            else
+            {
+            	t.moveToFirst();
+        		m.put("next_time", Time.valueOf(route.getString(route.getColumnIndex("stop_time"))));
+        		ret.add(m);
+            }
+            t.close();
+            
+            route.moveToNext();
+        }
+		route.close();
+		
+		return ret;
 	}
 }

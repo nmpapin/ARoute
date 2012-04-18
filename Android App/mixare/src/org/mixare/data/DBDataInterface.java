@@ -6,12 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
-import android.text.format.Time;
+import java.sql.Time;
 
 public class DBDataInterface extends DataInterface 
 {
@@ -76,7 +72,7 @@ public class DBDataInterface extends DataInterface
 	{
 		if(mDB != null)
 		{
-			return mDB.getRoutesLeaving(stop, time.format("%T"));
+			return mDB.getRoutesLeaving(stop, time.toString());
 		}
 		else
 		{

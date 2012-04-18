@@ -20,7 +20,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.text.format.Time;
+import java.sql.Time;
 import android.util.Log;
 
 public class DataInterface 
@@ -70,7 +70,7 @@ public class DataInterface
 		String url = DATA_URL_BASE + "get_following_stations.php?route=" + route + "&stop=" + stop;
 		if(time != null)
 		{
-			url += "&time=" + time.format("%T");
+			url += "&time=" + time.toString();
 		}
 		
 		try 
@@ -103,7 +103,7 @@ public class DataInterface
 		String url = DATA_URL_BASE + "get_following_stops.php?route=" + route + "&stop=" + stop;
 		if(time != null)
 		{
-			url += "&time=" + time.format("%T");
+			url += "&time=" + time.toString();
 		}
 		
 		try 
@@ -174,7 +174,7 @@ public class DataInterface
 		String url = DATA_URL_BASE + "get_routes_leaving.php?stop=" + stop;
 		if(time != null)
 		{
-			url += "&time=" + time.format("%T");
+			url += "&time=" + time.toString();
 		}
 		
 		try
