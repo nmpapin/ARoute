@@ -23,10 +23,14 @@ public class RouteActivity extends MapActivity {
     
 	LocationManager locationManager;
 	
+	public static Context mCtx;
+	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+    	mCtx = this;
+    	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.walkingmap);
         Intent startIntent = getIntent();
@@ -80,15 +84,17 @@ public class RouteActivity extends MapActivity {
         // ICON SETUP
         // Walking icons 
         Drawable walkingdrawable = this.getResources().getDrawable(R.drawable.walkingman);
-        HelloItemizedOverlay walkingoverlay = new HelloItemizedOverlay(walkingdrawable, this);
-
+        walkingdrawable.setBounds(0, 0, walkingdrawable.getIntrinsicWidth(), walkingdrawable.getIntrinsicHeight());
+        
         // Bus icons
         Drawable busdrawable = this.getResources().getDrawable(R.drawable.bus);
-        HelloItemizedOverlay busoverlay = new HelloItemizedOverlay(busdrawable, this);
+        busdrawable.setBounds(0, 0, busdrawable.getIntrinsicWidth(), busdrawable.getIntrinsicHeight());
         
         // Star icons
         Drawable stardrawable = this.getResources().getDrawable(R.drawable.star);
-        HelloItemizedOverlay staroverlay = new HelloItemizedOverlay(stardrawable, this);
+        stardrawable.setBounds(0, 0, stardrawable.getIntrinsicWidth(), stardrawable.getIntrinsicHeight());
+        
+        HelloItemizedOverlay mainOverlay = new HelloItemizedOverlay(walkingdrawable, this);
         
         /* *
          * Draw Start to Bus 
@@ -103,7 +109,8 @@ public class RouteActivity extends MapActivity {
         // Walk Start Icon
         GeoPoint start = new GeoPoint((int) (startLat * 1e6), (int) (startLng*1e6));
         OverlayItem startOverlay = new OverlayItem(start, "Walk to First Stop", "Approximately " + distance(startLat, startLng, firstStopLoc.getLatitudeE6() / 1e6, firstStopLoc.getLongitudeE6() / 1e6));
-        walkingoverlay.addOverlay(startOverlay);
+        startOverlay.setMarker(walkingdrawable);
+        mainOverlay.addOverlay(startOverlay);
         
         /* *
          * Bus Routing
@@ -112,11 +119,8 @@ public class RouteActivity extends MapActivity {
         {
         	// Add on bus start point overlay
         	RoutePoint rp = route.get(i);
-        	OverlayItem rpOverlay = new OverlayItem(rp.location, rp.title, rp.snippet);
-        	if(rp.type.equals("walking"))
-        		walkingoverlay.addOverlay(rpOverlay);
-        	else
-        		busoverlay.addOverlay(rpOverlay);
+        	mainOverlay.addOverlay(rp.createOverlayItem());
+        	
         	
         	// Add route map portion
         	if(rp.nextRoutePoint != null)
@@ -163,15 +167,14 @@ public class RouteActivity extends MapActivity {
         // Walk Start Icon
         GeoPoint end = new GeoPoint((int) (endLat * 1e6), (int) (endLng * 1e6));
         OverlayItem destOverlay = new OverlayItem(end, "Arrive At Destination", "");
-        staroverlay.addOverlay(destOverlay);
+        destOverlay.setMarker(stardrawable);
+        mainOverlay.addOverlay(destOverlay);
         
         /* *
          * Finalize all overlays
          * */
         //Add all itemized overlays
-        mapOverlays.add(busoverlay); //add overlay to mapview
-        mapOverlays.add(walkingoverlay); //add overlay to mapview
-        mapOverlays.add(staroverlay);
+        mapOverlays.add(mainOverlay);
         /* End Drawing Station */
     }
     
