@@ -291,7 +291,14 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 		}
 		
 		stops.moveToFirst();
-		int startStopId = stops.getInt(stops.getColumnIndex("_id"));		
+		int startStopId = stops.getInt(stops.getColumnIndex("_id"));	
+		
+		Map<String, Object> startData = new HashMap<String, Object>();
+		startData.put("stop_id", stops.getInt(stops.getColumnIndex("stop_id")));
+		startData.put("name", stops.getString(stops.getColumnIndex("name")));
+		startData.put("latitude", stops.getDouble(stops.getColumnIndex("latitude")));
+		startData.put("longitude", stops.getDouble(stops.getColumnIndex("longitude")));
+		
 		stops.moveToNext();
 		
 		Cursor startT = mDataBase.rawQuery
@@ -328,6 +335,10 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 		String startTimeStr;
 		startT.moveToFirst();
         startTimeStr = startT.getString(startT.getColumnIndex("stop_time"));
+        
+        startData.put("time", Time.valueOf(startTimeStr));
+        ret.add(startData);
+        
         startT.close();
 		
         while(stops.isAfterLast() == false) 
