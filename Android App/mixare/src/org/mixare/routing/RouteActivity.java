@@ -60,7 +60,16 @@ public class RouteActivity extends MapActivity {
         //endLat = 33.803186;
         //endLng = -84.41328;
         
+                
+        
         MartaRouting mr = new MartaRouting(startLat, startLng, endLat, endLng);
+        
+        //TODO: turn off debug mode
+        if (MartaRouting.DEBUG_MODE == true)
+        {
+        	mr = MartaRouting.MartaRoutingTestShort();
+        }
+        
         List<RoutePoint> route = mr.getRoute();
         Routing router = new Routing();
         

@@ -29,6 +29,7 @@ public class MartaRouting
 {
 	public static boolean USE_DBDATAINTERFACE = true;
 	public int NEARBY_DISTANCE = 2000; //TODO: Should be a constant
+	public static final boolean DEBUG_MODE = true;
 	
 	protected static List<Map<String, Object>> lastQueryList;
 	
@@ -64,8 +65,17 @@ public class MartaRouting
 	public int maxSolutions = 1;
 	
 	public boolean foundWorkingRoute = false;
+	
 	/**
-	 * 
+	 * Whether calculate route was able to find the solution
+	 * @return
+	 */
+	public boolean foundSolution()
+	{
+		return foundWorkingRoute;
+	}
+	
+	/**
 	 * 
 	 * @param startLat
 	 * @param startLng
@@ -80,7 +90,8 @@ public class MartaRouting
 		this.destLat = destLat;
 		this.destLng = destLng;
 		
-		TimeStop.clearGraph(); //Clear timestop graph
+		TimeStop.clearGraph(); //Clear timestop graph so will make new timestomp
+								//May actually be completely unnecessary
 		
 		dbi = createDBI();
 		possibleStartStops = Stop.getStopsNear(startLat, startLng, NEARBY_DISTANCE);
@@ -245,7 +256,43 @@ public class MartaRouting
 		return routes.get(0);
 	}
 	
-	
+	public boolean checkTimeStopGraph()
+	{
+		boolean pass = true;
+		
+		//check destination stops are actually destination stops
+		boolean allDests = true;
+		for(TimeStop dest : tsg.getEndStops())
+		{
+			if (isPossibleDestStop(dest))
+				verboseLogPrint("TimeStop "+dest.tStopID+" verified as destination");
+			else
+			{
+				allDests = false;
+				verboseLogPrint("TimeStop "+dest.tStopID+" failed as destination");
+			}
+		}
+		if (allDests)
+			logPrint("All Destinations Verified");
+		
+		boolean allStarts = true;
+		for(TimeStop start : tsg.getStartStops())
+		{
+			if (isPossibleDestStop(start))
+				verboseLogPrint("TimeStop "+start.tStopID+" verified as destination");
+			else
+			{
+				allDests = false;
+				verboseLogPrint("TimeStop "+start.tStopID+" failed as destination");
+			}
+		}
+		if (allStarts)
+			logPrint("All Destinations Verified");
+		
+		logPrintImportant("checking graph passed = "+pass);
+		return pass;
+	}
+
 	/**
 	 * Calculate route between indicated 
 	 * 
@@ -280,10 +327,14 @@ public class MartaRouting
 		if (result > 0) //successful
 		{
 			logPrint("Found result after "+result+" iterations");
-			
+			foundWorkingRoute = true;
 		}
 		else
+		{
 			logPrint("Did not find destination");
+			foundWorkingRoute = false;
+		}
+		return foundWorkingRoute;
 	}
 	
 	/**

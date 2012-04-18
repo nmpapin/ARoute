@@ -30,7 +30,31 @@ public class TimeStopGraph
 			ts.enqueued = false;
 			ts.dequeued = false;
 			ts.visited = false;
+			ts.isDestStop = false;
+			ts.isStartStop = false;
 		}
+	}
+	
+	public ArrayList<TimeStop> getEndStops()
+	{
+		ArrayList<TimeStop> ends = new ArrayList<TimeStop>();
+		for(TimeStop ts : timeNodes)
+		{
+			if (ts.isDestStop)
+				ends.add(ts);
+		}
+		return ends;
+	}
+	
+	public ArrayList<TimeStop> getStartStops()
+	{
+		ArrayList<TimeStop> starts = new ArrayList<TimeStop>();
+		for(TimeStop ts : timeNodes)
+		{
+			if (ts.isStartStop)
+				starts.add(ts);
+		}
+		return starts;
 	}
 	
 	/**
@@ -111,7 +135,7 @@ public class TimeStopGraph
 				ArrayList<Edge> t2in = inEdges.get(t2.tStopID);
 				if (!t2in.contains(this))
 				{
-					t1out.add(this);
+					t2in.add(this);
 				}
 				return true;
 			}
