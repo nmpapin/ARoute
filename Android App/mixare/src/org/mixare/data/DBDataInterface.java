@@ -2,6 +2,9 @@ package org.mixare.data;
 
 import java.io.IOException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 
 public class DBDataInterface extends DataInterface 
@@ -37,6 +40,7 @@ public class DBDataInterface extends DataInterface
 	//
 	// INTERFACE METHODS
 	//
+	@Override
 	public void close()
 	{
 		super.close();
@@ -47,4 +51,19 @@ public class DBDataInterface extends DataInterface
 			mDB = null;
 		}
 	}
+	
+	@Override
+	public double distanceToStop(double lat, double lng, int stop)
+	{
+		if(mDB != null)
+		{
+			return mDB.distanceToStop(lat, lng, stop);
+		}
+		else
+		{
+			return super.distanceToStop(lat, lng, stop);
+		}
+	}
+	
+	
 }

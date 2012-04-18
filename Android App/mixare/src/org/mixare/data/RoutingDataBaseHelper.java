@@ -137,22 +137,33 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 	//
 	public double distanceToStop(double lat, double lng, int stop)
 	{
-		mDataBase.rawQuery
+		Cursor cur = mDataBase.rawQuery
 		(
 				"SELECT latitude, longitude" +
 				"FROM stop" +
-				"WHERE _id = $stop" +
+				"WHERE _id = " + stop +
 				"ORDER BY distance ASC;", 
 				new String[0]
 		);
 		
-		
-		return 0;
+		cur.moveToFirst();
+		return distance(lat, lng, cur);
 	}
 	
-	private double distance(double lat, double lng, Cursor c)
+	private double distance(double lat, double lng, Cursor cur)
 	{
+		double cLat = cur.getDouble(cur.getColumnIndex("latitude"));
+		double cLng = cur.getDouble(cur.getColumnIndex("longitude"));
+		final int R = 6371000; // Radious of the earth in meters
 		
-		return 0;
+		Double latDistance = Math.toRadians(cLat-lat);
+		Double lonDistance = Math.toRadians(cLng-lng);
+		Double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) + 
+				   Math.cos(Math.toRadians(lat)) * Math.cos(Math.toRadians(cLat)) * 
+				   Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+		Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+		Double distance = R * c;
+		
+		return distance;
 	}
 }
