@@ -4,6 +4,7 @@ import com.google.android.maps.*;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.*;
@@ -11,8 +12,10 @@ import android.os.Bundle;
 import android.util.Log;
 
 import java.io.File;
+import java.sql.Time;
 import java.util.*;
 
+import org.mixare.MixView;
 import org.mixare.R;
 import org.mixare.maps.*;
 
@@ -27,6 +30,16 @@ public class RouteActivity extends MapActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.walkingmap);
         Intent startIntent = getIntent();
+        Location destLoc = startIntent.getExtras().getParcelable("location");
+        Location startLoc = MixView.dataView.getContext().getCurrentLocation();
+        
+        // Starting Location
+        double startLat = startLoc.getLatitude();
+        double startLng = startLoc.getLongitude();
+        
+        // Ending Location
+        double endLat = destLoc.getLatitude();
+        double endLng = destLoc.getLongitude();
         
         /* Set zoom capability */
         MapView mapView = (MapView) findViewById(R.id.mapview);
@@ -36,12 +49,16 @@ public class RouteActivity extends MapActivity {
         List<Overlay> mapOverlays = mapView.getOverlays();
         
         //Library starting location
-        double startLat = 33.775366;
-        double startLng = -84.39517;
+        //startLat = 33.775366;
+        //startLng = -84.39517;
         
         //Kroger ending location
-        double destLat = 33.803186;
-        double destLng = -84.41328;
+        //endLat = 33.803186;
+        //endLng = -84.41328;
+        
+        MartaRouting mr = new MartaRouting(startLat, startLng, endLat, endLng);
+        List<RoutePoint> route = mr.getRoute();
+        Routing router = new Routing();
         
         //Bus locations
         double bus1Lat = 33.781197;
@@ -49,64 +66,108 @@ public class RouteActivity extends MapActivity {
         double bus2Lat = 33.80031;
         double bus2Lng = -84.415716;
         
+        RoutePoint rp2 = new RoutePoint(bus2Lat, bus2Lng, "bus", "title 2",
+						"snippet 2", Time.valueOf("01:30:00"), null);
+        RoutePoint rp1 = new RoutePoint(bus1Lat, bus1Lng, "bus", "title 1",
+						"snippet 1", Time.valueOf("01:00:00"), rp2);
         
-        //Leg1***********************************
-        Routing router = new Routing();
-        ArrayList<GeoPoint> points = (ArrayList<GeoPoint>) router.getRouteGeoPoints(startLat, startLng, bus1Lat, bus1Lng, "walking");
+        route = Arrays.asList(new RoutePoint[]
+		{
+        	rp1,
+        	rp2        				
+		});
         
-        RouteOverlay walkToBus = new RouteOverlay(mapView, Color.GREEN, points);
-        mapOverlays.add(walkToBus);
-        
-        /* Draw station at endpoint as bus icon */
-        Drawable busdrawable = this.getResources().getDrawable(R.drawable.bus);	// added bus.gif to
-        																		// res/drawable directory
+        // ICON SETUP
+        // Walking icons 
+        Drawable walkingdrawable = this.getResources().getDrawable(R.drawable.walkingman);
+        HelloItemizedOverlay walkingoverlay = new HelloItemizedOverlay(walkingdrawable, this);
+
+        // Bus icons
+        Drawable busdrawable = this.getResources().getDrawable(R.drawable.bus);
         HelloItemizedOverlay busoverlay = new HelloItemizedOverlay(busdrawable, this);
         
-        /* Walking icons */
-        Drawable walkingdrawable = this.getResources().getDrawable(R.drawable.walkingman);	// added bus.gif to
-		// res/drawable directory
-        HelloItemizedOverlay walkingoverlay = new HelloItemizedOverlay(walkingdrawable, this);
-        
-        /* Star icons */
-        Drawable stardrawable = this.getResources().getDrawable(R.drawable.star);	// added bus.gif to
-		// res/drawable directory
+        // Star icons
+        Drawable stardrawable = this.getResources().getDrawable(R.drawable.star);
         HelloItemizedOverlay staroverlay = new HelloItemizedOverlay(stardrawable, this);
         
-        /* Create the Geopoint of the location you want to add, and add it to the overlay */
-        //start walking
-        GeoPoint point = new GeoPoint((int) (startLat * 1e6), (int) (startLng*1e6)); //specified in microdegrees (lat, long)
-        OverlayItem overlayitem1 = new OverlayItem(point, "Walk to 10th St NW@Atlantic Dr NW Station", "0.7 miles: approximately 13 minutes");
-        walkingoverlay.addOverlay(overlayitem1); //add point to overlay list
+        /* *
+         * Draw Start to Bus 
+         * */
+        // Walk to the stop.
+        RoutePoint first = route.get(0);
+        GeoPoint firstStopLoc = first.location;
+        ArrayList<GeoPoint> startPoints = (ArrayList<GeoPoint>) router.getRouteGeoPoints(startLat, startLng, firstStopLoc.getLatitudeE6() / 1e6, firstStopLoc.getLongitudeE6() / 1e6, "walking");
+        RouteOverlay walkToBus = new RouteOverlay(mapView, Color.GREEN, startPoints);
+        mapOverlays.add(walkToBus);
         
-        //enter bus route
-        point = new GeoPoint((int) (bus1Lat * 1e6), (int) (bus1Lng*1e6)); //specified in microdegrees (lat, long)
-        OverlayItem overlayitem2 = new OverlayItem(point, "Depart 10th St NW@Atlantic Dr NW Station", "7:05am: Howell Mill Rd/Cumberland - Direction: 12 Cumberland Via Northside");
-        busoverlay.addOverlay(overlayitem2); //add point to overlay list
+        // Walk Start Icon
+        GeoPoint start = new GeoPoint((int) (startLat * 1e6), (int) (startLng*1e6));
+        OverlayItem startOverlay = new OverlayItem(start, "Walk to First Stop", "Approximately " + distance(startLat, startLng, firstStopLoc.getLatitudeE6() / 1e6, firstStopLoc.getLongitudeE6() / 1e6));
+        walkingoverlay.addOverlay(startOverlay);
         
-        //Leg2************************************
-        String[] waypoints = {"33.781502,-84.41328", "33.782928,-84.413538", "33.783856,-84.412079", "33.790347,-84.411821", "33.79641,-84.415941"};
-        //ArrayList<GeoPoint> points2 = (ArrayList<GeoPoint>) router.getRouteWithWaypoints(bus1Lat, bus1Lng, bus2Lat, bus2Lng, "driving", waypoints);
-        ArrayList<GeoPoint> points2 = (ArrayList<GeoPoint>) router.getRouteGeoPoints(bus1Lat, bus1Lng, bus2Lat, bus2Lng, "driving");
+        /* *
+         * Bus Routing
+         * */
+        for(int i = 0; i < route.size(); i++)
+        {
+        	// Add on bus start point overlay
+        	RoutePoint rp = route.get(i);
+        	OverlayItem rpOverlay = new OverlayItem(rp.location, rp.title, rp.snippet);
+        	if(rp.type.equals("walking"))
+        		walkingoverlay.addOverlay(rpOverlay);
+        	else
+        		busoverlay.addOverlay(rpOverlay);
+        	
+        	// Add route map portion
+        	if(rp.nextRoutePoint != null)
+        	{
+        		GeoPoint startPoint = rp.location;
+        		GeoPoint endPoint = rp.nextRoutePoint.location;
+        		String type = rp.type;
+        		ArrayList<GeoPoint> rpPoints;
+        		
+        		if(!type.equals("rail"))
+        		{
+	        		String rtype = type.equals("walking") ? "walking" : "bus";
+	        		rpPoints = (ArrayList<GeoPoint>)router.getRouteGeoPoints
+	        		(
+	        			startPoint.getLatitudeE6() / 1e6, 
+	        			startPoint.getLongitudeE6() / 1e6, 
+	    				endPoint.getLatitudeE6() / 1e6, 
+	    				endPoint.getLongitudeE6() / 1e6, 
+	    				rtype
+	        		);
+        		}
+        		else
+        		{
+        			rpPoints = new ArrayList<GeoPoint>();
+        			rpPoints.add(startPoint);
+        			rpPoints.add(endPoint);
+        		}
+        		
+        		RouteOverlay busCourse = new RouteOverlay(mapView, Color.GREEN, rpPoints);
+        		mapOverlays.add(busCourse);
+        	}
+        }
         
-        RouteOverlay BusToBus = new RouteOverlay(mapView, Color.GREEN, points2);
-        mapOverlays.add(BusToBus);
+        /* *
+         * Draw Bus to End
+         * */
+        // Walk to the stop.
+        RoutePoint last = route.get(route.size() - 1);
+        GeoPoint lastStopLoc = last.location;
+        ArrayList<GeoPoint> endPoints = (ArrayList<GeoPoint>) router.getRouteGeoPoints(lastStopLoc.getLatitudeE6() / 1e6, lastStopLoc.getLongitudeE6() / 1e6, endLat, endLng, "walking");
+        RouteOverlay walkFromBus = new RouteOverlay(mapView, Color.GREEN, endPoints);
+        mapOverlays.add(walkFromBus);
         
-        //exit bus route
-        point = new GeoPoint((int) (bus2Lat * 1e6), (int) (bus2Lng*1e6)); //specified in microdegrees (lat, long)
-        OverlayItem overlayitem3 = new OverlayItem(point, "7:29am:	Arrive Howell Mill Rd NW@Bellemeade Ave NW", "Walk to destination - 0.2 miles: approximately 4 minutes");
-        walkingoverlay.addOverlay(overlayitem3); //add point to overlay list
+        // Walk Start Icon
+        GeoPoint end = new GeoPoint((int) (endLat * 1e6), (int) (endLng * 1e6));
+        OverlayItem destOverlay = new OverlayItem(end, "Arrive At Destination", "");
+        walkingoverlay.addOverlay(destOverlay);
         
-        //Leg3***********************************
-        ArrayList<GeoPoint> points3 = (ArrayList<GeoPoint>) router.getRouteGeoPoints(bus2Lat, bus2Lng, destLat, destLng, "walking");
-        
-        RouteOverlay walkToDest = new RouteOverlay(mapView, Color.GREEN, points3);
-        mapOverlays.add(walkToDest);
-        
-        //exit bus route
-        point = new GeoPoint((int) (destLat * 1e6), (int) (destLng*1e6)); //specified in microdegrees (lat, long)
-        OverlayItem overlayitem4 = new OverlayItem(point, "7:34am:	Arrive 1715 Howell Mill Road Northwest, Atlanta, GA 30318", "Travel Time: 29 minutes");
-        staroverlay.addOverlay(overlayitem4); //add point to overlay list
-        
+        /* *
+         * Finalize all overlays
+         * */
         //Add all itemized overlays
         mapOverlays.add(busoverlay); //add overlay to mapview
         mapOverlays.add(walkingoverlay); //add overlay to mapview
@@ -119,6 +180,23 @@ public class RouteActivity extends MapActivity {
     {
         return true;
     }
+    
+    private double distance(double lat, double lng, double lat2, double lng2)
+	{
+		double cLat = lat2;
+		double cLng = lng2;
+		final int R = 6371; // Radious of the earth in meters
+		
+		Double latDistance = Math.toRadians(cLat-lat);
+		Double lonDistance = Math.toRadians(cLng-lng);
+		Double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) + 
+				   Math.cos(Math.toRadians(lat)) * Math.cos(Math.toRadians(cLat)) * 
+				   Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+		Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+		Double distance = R * c;
+		
+		return distance;
+	}
     
     //*********** Implement location updates here
     //requires implementing locationlistener, adding several methods 

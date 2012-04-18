@@ -2,6 +2,10 @@ package org.mixare.routing;
 
 import java.sql.Time;
 
+import org.mixare.MixView;
+import org.mixare.R;
+import org.mixare.maps.HelloItemizedOverlay;
+
 import android.graphics.drawable.Drawable;
 
 import com.google.android.maps.GeoPoint;
@@ -60,7 +64,7 @@ public class RoutePoint
 	public RoutePoint(double lat, double lng, String type, String title,
 			String snippet, Time arrivalTime, RoutePoint nextRoutePoint)
 	{
-		//Fix
+		this(new GeoPoint((int) (lat * 1e6), (int) (lng*1e6)), type, title, snippet, arrivalTime, nextRoutePoint);
 	}
 
 	//FIX ME
@@ -73,6 +77,9 @@ public class RoutePoint
 	//Based on "type"
 	public Drawable getMarker()
 	{
-		return null;
+		Drawable walkingdrawable = MixView.dataView.getContext().getResources().getDrawable(R.drawable.walkingman);
+        Drawable busdrawable = MixView.dataView.getContext().getResources().getDrawable(R.drawable.bus);
+		
+		return type.equals("walking") ? walkingdrawable : busdrawable;
 	}
 }
