@@ -13,7 +13,7 @@ public class HelloItemizedOverlay extends ItemizedOverlay
 	
 	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
 	
-	Context mContext; //
+	Context mContext; 
 
 	public HelloItemizedOverlay(Drawable defaultMarker)
 	{	
@@ -33,6 +33,13 @@ public class HelloItemizedOverlay extends ItemizedOverlay
 	 */
 	public void addOverlay(OverlayItem overlay)
 	{
+		Drawable d = overlay.getMarker(0);
+		
+		if(d != null)
+		{
+			overlay.setMarker(boundCenterBottom(d));
+		}
+		
 	    mOverlays.add(overlay);
 	    populate(); //Called to prepare each item to be drawn
 	}

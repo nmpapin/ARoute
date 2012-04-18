@@ -7,6 +7,7 @@ import org.mixare.R;
 import org.mixare.maps.HelloItemizedOverlay;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.OverlayItem;
@@ -71,15 +72,23 @@ public class RoutePoint
 	//Use all data and getMarker to create the overlay item for you
 	public OverlayItem createOverlayItem()
 	{
-		return null;
+		OverlayItem rpOverlay = new OverlayItem(location, title, snippet);
+    	rpOverlay.setMarker(getMarker());
+    	
+    	return rpOverlay;
 	}
 	
 	//Based on "type"
 	public Drawable getMarker()
 	{
-		Drawable walkingdrawable = MixView.dataView.getContext().getResources().getDrawable(R.drawable.walkingman);
-        Drawable busdrawable = MixView.dataView.getContext().getResources().getDrawable(R.drawable.bus);
+		Drawable walkingdrawable = RouteActivity.mCtx.getResources().getDrawable(R.drawable.walkingman);
+        Drawable busdrawable = RouteActivity.mCtx.getResources().getDrawable(R.drawable.bus);
 		
-		return type.equals("walking") ? walkingdrawable : busdrawable;
+        Drawable ret = type.equals("walking") ? walkingdrawable : busdrawable;
+        ret.setBounds(0, 0, ret.getIntrinsicWidth(), ret.getIntrinsicHeight());
+        
+        Log.i("Markers", ret == null ? "null" : ret.toString());
+        
+		return ret;
 	}
 }
