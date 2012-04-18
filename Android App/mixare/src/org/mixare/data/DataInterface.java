@@ -90,6 +90,9 @@ public class DataInterface
 				JSONObject station = arr.getJSONObject(i);
 				Map<String, Object> m = new HashMap<String, Object>();
 				m.put("stop_id", station.get("stop_id"));
+				m.put("name", station.get("name"));
+				m.put("latitude", station.get("latitude"));
+				m.put("longitude", station.get("longitude"));
 				m.put("time", Time.valueOf(station.getString("time")));
 				ret.add(m);
 			}
@@ -123,6 +126,9 @@ public class DataInterface
 				JSONObject station = arr.getJSONObject(i);
 				Map<String, Object> m = new HashMap<String, Object>();
 				m.put("stop_id", station.get("stop_id"));
+				m.put("name", station.get("name"));
+				m.put("latitude", station.get("latitude"));
+				m.put("longitude", station.get("longitude"));
 				m.put("time", Time.valueOf(station.getString("time")));
 				ret.add(m);
 			}
@@ -262,6 +268,29 @@ public class DataInterface
 		catch (JSONException e) 
 		{
 			return false;
+		}
+	}
+	
+	/**
+	 * Returns the name of the given stop.
+	 */
+	public Map<String, Object> getData(int stop)
+	{
+		String url = DATA_URL_BASE + "is_station.php?stop=" + stop;
+		
+		try 
+		{
+			JSONObject jo = new JSONObject(getURLContents(url));
+			Map<String, Object> m = new HashMap<String, Object>();
+			m.put("stop_id", jo.get("id"));
+			m.put("name", jo.get("name"));
+			m.put("latitude", jo.get("latitude"));
+			m.put("longitude", jo.get("longitude"));
+			return m;
+		} 
+		catch (JSONException e) 
+		{
+			return null;
 		}
 	}
 	

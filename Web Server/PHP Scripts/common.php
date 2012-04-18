@@ -225,11 +225,12 @@
 		
 		$stops = $database->getResults
 		(
-			"SELECT id, stop_id
-			FROM routing_route_stop
-			WHERE route_order >= $order
-			AND route_var_id = $route
-			ORDER BY route_order ASC;"
+			"SELECT rs.id, rs.stop_id, s.name, s.latitude, s.longitude
+			FROM routing_route_stop AS rs
+			JOIN routing_stop AS s ON rs.stop_id = s.id
+			WHERE rs.route_order >= $order
+			AND rs.route_var_id = $route
+			ORDER BY rs.route_order ASC;"
 		);
 		
 		$start = $stops[0];

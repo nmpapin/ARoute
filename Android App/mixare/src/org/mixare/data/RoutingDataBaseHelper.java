@@ -275,11 +275,12 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 		
 		Cursor stops = mDataBase.rawQuery
 		(
-			"SELECT _id, stop_id " +
-			"FROM route_stop " +
-			"WHERE route_order >= " + orderNum +
-			" AND route_var_id = " + route + 
-			" ORDER BY route_order ASC;",
+			"SELECT rs._id, rs.stop_id, s.name, s.latitude, s.longitude " +
+			"FROM route_stop AS rs" +
+			"JOIN stop AS s ON rs.stop_id = s._id " +
+			"WHERE rs.route_order >= " + orderNum +
+			" AND rs.route_var_id = " + route + 
+			" ORDER BY rs.route_order ASC;",
 			new String[0]
 		);
 		
@@ -332,6 +333,9 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 		{
         	Map<String, Object> m = new HashMap<String, Object>();
 			m.put("stop_id", stops.getInt(stops.getColumnIndex("stop_id")));
+			m.put("name", stops.getString(stops.getColumnIndex("name")));
+			m.put("latitude", stops.getDouble(stops.getColumnIndex("latitude")));
+			m.put("longitude", stops.getDouble(stops.getColumnIndex("longitude")));
         	
         	int cid = stops.getInt(stops.getColumnIndex("_id"));
         	startT = mDataBase.rawQuery
@@ -466,5 +470,26 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 		});
 		
 		return ret;
+	}
+	
+	public Map<String, Object> getData(int stop)
+	{
+		Map<String, Object> m = new HashMap<String, Object>();
+		Cursor stops = mDataBase.rawQuery
+		(
+			"SELECT * " +
+			"FROM stop " +
+			"WHERE _id = " + stop + ";",
+			new String[0]
+		);
+		
+		stops.moveToFirst();
+		m.put("stop_id", stops.getInt(stops.getColumnIndex("_id")));
+		m.put("name", stops.getString(stops.getColumnIndex("name")));
+		m.put("latitude", stops.getDouble(stops.getColumnIndex("latitude")));
+		m.put("longitude", stops.getDouble(stops.getColumnIndex("longitude")));
+		stops.close();
+		
+		return m;
 	}
 }

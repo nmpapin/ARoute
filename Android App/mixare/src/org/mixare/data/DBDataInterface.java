@@ -190,4 +190,17 @@ public class DBDataInterface extends DataInterface
 			return super.getNearbyMajorStops(lat, lng, maxDistance);
 		}
 	}
+	
+	@Override
+	public Map<String, Object> getData(int stop)
+	{
+		if(mDB != null)
+		{
+			return mDB.getData(stop);
+		}
+		else
+		{
+			return super.getData(stop);
+		}
+	}
 }
