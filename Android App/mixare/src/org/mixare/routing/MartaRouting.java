@@ -52,6 +52,7 @@ public class MartaRouting
 	
 	private ArrayList<Stop> possibleStartStops;
 	private ArrayList<Stop> possibleDestStops;
+	private Stop closestDestinationStop;
 	
 	private int recursionDepth = 20;
 	
@@ -62,6 +63,7 @@ public class MartaRouting
 	public int solutions;
 	public int maxSolutions = 1;
 	
+	public boolean foundWorkingRoute = false;
 	/**
 	 * 
 	 * 
@@ -243,7 +245,13 @@ public class MartaRouting
 		return routes.get(0);
 	}
 	
-	public void calculateRoute() {
+	
+	/**
+	 * Calculate route between indicated 
+	 * 
+	 * @return true if successful;
+	 */
+	public boolean calculateRoute() {
 		
 		if (tsg != null)
 			tsg.reset();
@@ -268,11 +276,14 @@ public class MartaRouting
 		
 		logPrint("Starting iterations");
 		int result = iterateBFSMOD(200, 1); //search up to 200 nodes, queuing 1stop/move
-		if (result > 0)
+		
+		if (result > 0) //successful
+		{
 			logPrint("Found result after "+result+" iterations");
+			
+		}
 		else
 			logPrint("Did not find destination");
-		
 	}
 	
 	/**
@@ -330,13 +341,17 @@ public class MartaRouting
 			return false;
 		}
 		
-		logPrint("enqueued TimeStop: ");
+		logPrint("enqueued TimeStop: "+ts);
 		
 		if (isPossibleDestStop(ts))
 		{
 			ts.enqueued = true;
 			ts.isDestStop = true; //double check to be safe
 			solutions++;
+			
+			logPrintImportant("Found Destination Stop: "+ts);
+			logPrintImportant("Distance to final destination"+ ts.distanceToStop(destLat, destLng));
+			
 			return true; //Do not add to queue
 		}
 		
@@ -397,6 +412,18 @@ public class MartaRouting
 			}
 		}
 		return iterations;
+	}
+	
+	/**
+	 * Top-priority information printed to log with
+	 * tag: "MartaRouting important"
+	 * 
+	 * @param str
+	 */
+	public static void logPrintImportant(String str)
+	{
+		Log.i("MartaRouting important", str);
+		logPrint(str);
 	}
 	
 	/**
