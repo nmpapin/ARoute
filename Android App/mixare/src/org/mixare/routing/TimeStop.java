@@ -22,6 +22,7 @@ public class TimeStop extends Stop
 	/* Inherited fields from Stop
 		//int stopid;
 		//double lat, lng;
+		//String name;
 	*/
 	
 	public static int nearbyDistance = 500; //in meters
@@ -51,15 +52,43 @@ public class TimeStop extends Stop
 	}
 	
 	/**
+	 * Only way to create a TimeStop to make sure no duplicates
+	 * 
+	 * @param stopid
+	 * @param stoptime
+	 * @param latitude
+	 * @param longitude
+	 * @param name
+	 * @return
+	 */
+	public static TimeStop createTimeStop(int stopid, Time stoptime,
+											double latitude, double longitude, String name)
+	{
+		int tstopid = generateTimeStopID(stopid, stoptime);
+		if (stopGraph.containsKey(tstopid))
+			return stopGraph.get(tstopid);
+		else
+		{
+			return new TimeStop(tstopid, stopid, stoptime, latitude, longitude, name);
+		}
+	}
+	
+	public static TimeStop createTimeStop(Stop s, Time stoptime)
+	{
+		return createTimeStop(s.stopid, stoptime, s.lat, s.lng, s.name);
+	}
+	
+	/**
 	 * Must access through generateTimeStop
 	 * 
 	 * @param tStopID
 	 * @param latitude
 	 * @param longitude
 	 */
-	private TimeStop(int tStopID, int stopid, Time stoptime, double latitude, double longitude)
+	private TimeStop(int tStopID, int stopid, Time stoptime,
+					double latitude, double longitude, String stopname)
 	{
-		super(stopid, latitude, longitude);
+		super(stopid, latitude, longitude, stopname);
 		this.tStopID = tStopID;
 		this.stopid = stopid;
 		this.stoptimeInMins = stoptime.getHours()*60+stoptime.getMinutes();
@@ -69,6 +98,19 @@ public class TimeStop extends Stop
 		
 		if (!stopGraph.containsKey(tStopID))
 			stopGraph.put(tStopID, this);
+	}
+	
+	/**
+	 * Must access through generateTimeStop
+	 * 
+	 * @param tStopID
+	 * @param latitude
+	 * @param longitude
+	 */
+	private TimeStop(int tStopID, int stopid, Time stoptime,
+					double latitude, double longitude)
+	{
+		this(tStopID, stopid, stoptime, latitude, longitude, "");
 	}
 	
 	public static void clearGraph()

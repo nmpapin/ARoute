@@ -1,9 +1,17 @@
 package org.mixare.routing;
 
-public class StopException extends Exception
+import android.util.Log;
+
+public class StopException extends RuntimeException
 {
+	public StopException(String msg)
+	{
+		super(msg);
+		Log.i("Routing", "StopException: "+msg);
+	}
+	
 	public StopException()
 	{
-		super("Invalid map given: did not contain stopid, long, AND lat");
+		this("Invalid map given: did not contain stopid, long, AND lat");
 	}
 }

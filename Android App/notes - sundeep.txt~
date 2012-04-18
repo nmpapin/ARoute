@@ -1,1 +1,25 @@
-Always close database interface when done routing or else leaving activity causes errors
+Database
+	Always close database interface when done routing or else leaving activity causes errors
+
+MartaRouting
+	getFollowingStops(routeid, timestopid) - only ones that are closer to destination
+
+
+
+
+
+
+
+
+
+***************************TODO:
+Database
+
+
+
+
+
+
+
+*******************Fix if failure
+Nullpointer exceptions because didn't check MartaRouting.dbi == null

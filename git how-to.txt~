@@ -7,3 +7,14 @@ to retrieve:
 git pull (will automerge)
 
 git status //what has changed
+
+conflicts:
+	<<<<< HEAD
+
+	version of stuff from the master
+
+	==========
+
+	my version
+
+	>>>>>>>>>>number = revision number
