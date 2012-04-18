@@ -163,7 +163,7 @@ public class RouteActivity extends MapActivity {
         // Walk Start Icon
         GeoPoint end = new GeoPoint((int) (endLat * 1e6), (int) (endLng * 1e6));
         OverlayItem destOverlay = new OverlayItem(end, "Arrive At Destination", "");
-        walkingoverlay.addOverlay(destOverlay);
+        staroverlay.addOverlay(destOverlay);
         
         /* *
          * Finalize all overlays
