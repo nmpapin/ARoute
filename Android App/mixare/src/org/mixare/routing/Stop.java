@@ -66,6 +66,11 @@ public class Stop
 		return (stopid == s.stopid);
 	}
 	
+	public String toString()
+	{
+		return "Stop id: +"+stopid+" Lat: "+lat+" Lng: "+lng+" Name: "+name;
+	}
+	
 	//TODO: make use parseStopMap
 	/**
 	 * Parse a database query map result into a list of stops
@@ -80,7 +85,8 @@ public class Stop
 		
 		for(Map m : stopMap)
 		{
-			try {
+			stops.add(parseStopMap(m));
+			/*try {
 				int id = Integer.parseInt(m.get("stop_id").toString());
 				double lat = Double.parseDouble(m.get("latitude").toString());
 				double lng = Double.parseDouble(m.get("latitude").toString());
@@ -99,7 +105,7 @@ public class Stop
 			}
 			catch (NumberFormatException nfe) {
 				throw new StopException();
-			}
+			}*/
 		}
 		
 		return stops;
@@ -115,11 +121,15 @@ public class Stop
 			
 			try {
 				String name = m.get("name").toString();
-				return (new Stop(id, lat, lng, name));
+				Stop s = new Stop(id, lat, lng, name);
+				logPrint("Parsed stop: "+s.toString());
+				return s;
 			}
 			catch (NullPointerException npe) {
-				Log.i("Routing", "Couldn't parse stop name");
-				return (new Stop(id,lat,lng));
+				logPrintMinor("Couldn't parse stop name");
+				Stop s = new Stop(id,lat,lng);
+				logPrint("Parsed Stop: "+s.toString());
+				return s;
 			}
 		}
 		catch (NullPointerException npe) {
@@ -223,5 +233,15 @@ public class Stop
 			catch (NumberFormatException nfe) {
 				throw new StopException("stop id not number");
 			}
+		}
+		
+		public static void logPrint(String msg)
+		{
+			Log.i("Stop", msg);
+		}
+		
+		public static void logPrintMinor(String msg)
+		{
+			Log.i("StopMinor", msg);
 		}
 }

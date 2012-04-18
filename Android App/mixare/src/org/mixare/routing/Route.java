@@ -38,5 +38,4 @@ public class Route
 	{
 		return getFollowingStops(routeID, ts.stopid, ts.time);
 	}
-	
 }

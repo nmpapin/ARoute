@@ -83,6 +83,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.mixare.routing.*;
+
 public class MixView extends Activity implements SensorEventListener, OnTouchListener{
 
 	private CameraSurface camScreen;
@@ -494,11 +496,29 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 		return true;
 	}
 
+	@SuppressWarnings("static-access")
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		switch(item.getItemId()){
 		/*Data sources*/
 		case 1:
+			//Spot for test code
+			MartaRouting mr = MartaRouting.MartaRoutingTestShort();
+			
+			mr.logPrint("Starting: "+mr.startLat+", "+mr.startLng);
+			for(int i = 0; i < 5; i++)
+			{
+				mr.logPrint("Counter: "+mr.startCounter);
+				mr.logPrint(mr.getNextStartStop().toString());
+			}
+			
+			mr.logPrint("Dest: "+mr.destLat+", "+mr.destLng);
+			for(int i = 0; i < 5; i++)
+			{
+				mr.logPrint("Counter: "+mr.startCounter);
+				mr.logPrint(mr.getNextDestStop().toString());
+			}
+			
 			break;
 			/*List view*/
 		case 2:
