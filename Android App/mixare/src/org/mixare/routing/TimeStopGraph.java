@@ -22,6 +22,31 @@ public class TimeStopGraph
 		
 	}
 	
+	public void reset()
+	{
+		for(TimeStop ts : timeNodes)
+		{
+			ts.enqueued = false;
+			ts.dequeued = false;
+			ts.visited = false;
+		}
+	}
+	
+	/**
+	 * Add timestop node
+	 * 
+	 * @param ts
+	 * @return true if not already in list, false if already existed
+	 */
+	public boolean addTimeStop(TimeStop ts)
+	{
+		if (!(timeNodes.contains(ts)))
+		{
+			timeNodes.add(ts);
+			return true;
+		}
+		return false;
+	}
 
 	public ArrayList<Edge> previousEdges(TimeStop end)
 	{
@@ -74,14 +99,16 @@ public class TimeStopGraph
 			{
 				timeEdges.add(this);
 				
+				//Add t2 to t1's outgoing edges
 				ArrayList<Edge> t1out = outEdges.get(t1.tStopID);
 				if (!t1out.contains(this))
 				{
 					t1out.add(this);
 				}
 				
+				//Add t1 to t2's incoming edges
 				ArrayList<Edge> t2in = inEdges.get(t2.tStopID);
-				if (!t1out.contains(this))
+				if (!t2in.contains(this))
 				{
 					t1out.add(this);
 				}
@@ -97,7 +124,7 @@ public class TimeStopGraph
 				Edge e = (Edge) o;
 				if (t2 == e.t2 && e.t1 == t1)
 					return true;
-				//Works because I didn't allow more than one Timestop to be generated
+				//Works w/ == because I didn't allow more than one Timestop to be generated
 				//with any given tstopid
 				
 			}

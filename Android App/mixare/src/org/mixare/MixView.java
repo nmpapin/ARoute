@@ -507,18 +507,8 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 			MartaRouting mr = MartaRouting.MartaRoutingTestShort();
 			
 			mr.logPrint("Starting: "+mr.startLat+", "+mr.startLng);
-			for(int i = 0; i < 5; i++)
-			{
-				mr.logPrint("Counter: "+mr.startCounter);
-				mr.logPrint(mr.getNextStartStop().toString());
-			}
 			
 			mr.logPrint("Dest: "+mr.destLat+", "+mr.destLng);
-			for(int i = 0; i < 5; i++)
-			{
-				mr.logPrint("Counter: "+mr.startCounter);
-				mr.logPrint(mr.getNextDestStop().toString());
-			}
 			
 			break;
 			/*List view*/

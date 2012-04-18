@@ -243,9 +243,11 @@ public class MartaRouting
 		return routes.get(0);
 	}
 	
-	
-	
 	public void calculateRoute() {
+		
+		if (tsg != null)
+			tsg.reset();
+		
 		tsg = new TimeStopGraph();
 		tsQueue = new LinkedList<TimeStop>();
 		
@@ -255,12 +257,21 @@ public class MartaRouting
 		Time now = new Time(Calendar.getInstance().getTimeInMillis());
 		//logPrint(now.toString());
 		
-		
+		//Enqueue the start stops
 		while (solutions < maxSolutions && null != (s = getNextStartStop()))
 		{
 			//Default width = 5 and depth = 2
-			ModBredthFirstSearch(s, 5, new Time( Calendar.getInstance().getTimeInMillis()), 2);
+			ModBredthFirstSearch(s, 5, now);
 		}
+
+		logPrint("BFS roots created");
+		
+		logPrint("Starting iterations");
+		int result = iterateBFSMOD(200, 1); //search up to 200 nodes, queuing 1stop/move
+		if (result > 0)
+			logPrint("Found result after "+result+" iterations");
+		else
+			logPrint("Did not find destination");
 		
 	}
 	
@@ -268,14 +279,14 @@ public class MartaRouting
 	 * Builds to tsg
 	 * 
 	 * @param origin
-	 * @param width numRoutes to search
+	 * @param width numRoutes to search out for each starting node
 	 * @param time
-	 * @param depth	how many successive stops to push at a time (pseudo dfs now)
 	 * @return
 	 */
-	public TimeStopGraph ModBredthFirstSearch(Stop origin, int width, Time time, int depth)
+	public TimeStopGraph ModBredthFirstSearch(Stop origin, int width, Time time)
 	{
 		ArrayList<Route> routes = origin.getRoutesLeaving(time); //get routes servicing
+		logPrint("Received "+routes.size()+" routes leaving "+origin+" @ "+timeToString(time));
 		
 		int count = 0;
 		for(Route r : routes)
@@ -283,16 +294,22 @@ public class MartaRouting
 			if (count >= width)
 				break;
 			
-			TimeStop ts = r.getFollowingStops(origin.stopid, time).get(0);
-			ts.isStartStop = true;
-			enqueue(ts);
+			ArrayList<TimeStop> stops = r.getFollowingStops(origin.stopid, time);
+			logPrint("Received "+stops.size()+" stops after stop "+origin.stopid
+								+" on route "+r.routeID+" after "+timeToString(time));
+		
+			TimeStop ts = ( stops.size()> 0 ? stops.get(0) : null); 
 			
-			//push depth # stops (right now = two) at a time to make a pseudo DFS
-			for (int i = 1; i < depth; i++)
+			if (ts != null)
 			{
-				enqueue(r.getFollowingStops(origin.stopid, time).get(i));
+				ts.isStartStop = true;
+				enqueue(ts);
+		
+				count++;
 			}
-			count++;
+			else
+				logPrint("Route method getFollowingRoutes "+r+"returned 0 stops following "+origin
+								+"at Time: "+time.getHours()+":"+time.getMinutes());
 		}
 		
 		return tsg;
@@ -300,21 +317,32 @@ public class MartaRouting
 	
 	/**
 	 * Ensures don't push the same TimeStop
-	 * @param ts
+	 * Will set as destination if applicable
+	 * 
+	 * @param ts TimeStop to add to queue
+	 * @return true if ts was a new entry (not queued before)
 	 */
-	public void enqueue(TimeStop ts)
+	public boolean enqueue(TimeStop ts)
 	{
 		if (ts.enqueued)
-			return;
+		{
+			verboseLogPrint("Did not enqueue again: "+ts);
+			return false;
+		}
+		
+		logPrint("enqueued TimeStop: ");
 		
 		if (isPossibleDestStop(ts))
 		{
 			ts.enqueued = true;
+			ts.isDestStop = true; //double check to be safe
 			solutions++;
+			return true; //Do not add to queue
 		}
 		
 		ts.enqueued = true;
 		tsQueue.add(ts);
+		return true;
 	}
 	
 	/**
@@ -328,7 +356,18 @@ public class MartaRouting
 		return ts;
 	}
 	
-	public void iterateBFS(TimeStop origin, int maxIteration)
+	/**
+	 * Modified BFS loop were it searches the next x nodes along the route
+	 * (because more likely continuing on same route will take you there faster)
+	 * 
+	 * For each stop it searches *all* the routes leaving that stop
+	 * 
+	 * @param maxIterations how many nodes to search before giving up
+	 * @param depth how many stops down each route to traverse
+	 * 
+	 * @return the number of iterations until solution, -iterations if quit early
+	 */
+	public int iterateBFSMOD(int maxIterations, int depth)
 	{
 		int iterations = 0;
 		while (solutions < maxSolutions && !(tsQueue.isEmpty()))
@@ -337,16 +376,27 @@ public class MartaRouting
 			//Check if solution - already took care of
 			for(Route r : ts.getRoutesLeaving())
 			{
+				int count = 0;
 				for (TimeStop t2 : r.getFollowingStops(ts))
 				{
-					enqueue(t2);
+					//TODO: check that breaks inner loop only
+					if(t2 == null || count > depth-1)
+						break;
+					
+					if (enqueue(t2))
+						iterations++; //increase iteration for each new enqueue
+					
 					if (solutions >= maxSolutions)
 					{
 						logPrint("Found "+solutions+" solutions");
+						return iterations;
 					}
+					if (iterations > maxIterations)
+						return -iterations; //quit early
 				}
 			}
 		}
+		return iterations;
 	}
 	
 	/**
@@ -356,6 +406,12 @@ public class MartaRouting
 	public static void logPrint(String str)
 	{
 		Log.i("MartaRouting", str);
+		verboseLogPrint(str);
+	}
+	
+	public static void verboseLogPrint(String str)
+	{
+		Log.i("MartaRouting verbose", str);
 	}
 	
 	public boolean isPossibleDestStop(TimeStop ts)
@@ -363,7 +419,10 @@ public class MartaRouting
 		for (Stop s : possibleDestStops)
 		{
 			if (ts.isSameStopIgnoreTime(s))
+			{
+				ts.isDestStop = true;
 				return true;
+			}
 		}
 		
 		return false;
@@ -384,5 +443,10 @@ public class MartaRouting
 		Double distance = R * c;
 		
 		return distance;
+	}
+	
+	public String timeToString(Time t)
+	{
+		return t.getHours()+":"+t.getMinutes();
 	}
 }
