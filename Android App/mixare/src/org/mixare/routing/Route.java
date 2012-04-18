@@ -78,4 +78,14 @@ public class Route
 	{
 		return m.get("marta_id").toString();
 	}
+	
+	public String toString()
+	{
+		return "RouteID: "+routeID+" MartaID "+martaID;
+	}
+	
+	public boolean equals(Route r)
+	{
+		return routeID == r.routeID;
+	}
 }
