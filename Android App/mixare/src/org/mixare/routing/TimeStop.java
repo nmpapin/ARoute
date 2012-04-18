@@ -26,12 +26,16 @@ public class TimeStop extends Stop
 	
 	public int stoptimeInMins; //Time of the stop in minutes
 	public Time time;
+	public boolean visited = false;
+	public boolean pushed = false;
 	
 	/* Inherited fields from Stop
 		//int stopid;
 		//double lat, lng;
 		//String name;
 	*/
+	
+	public boolean isDestStop = false;
 	
 	public static int nearbyDistance = 500; //in meters
 	
@@ -184,9 +188,9 @@ public class TimeStop extends Stop
 			return false;
 	}
 	
-	public boolean sameStopIgnoreTime(Stop s)
+	public boolean isSameStopIgnoreTime(Stop s)
 	{
-		return super.equals(s);
+		return stopid == s.stopid;
 	}
 	
 	/**

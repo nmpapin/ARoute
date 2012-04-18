@@ -1,9 +1,11 @@
 package org.mixare.routing;
 
+import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Calendar;
 
 import android.content.Context;
 import android.util.Log;
@@ -11,6 +13,8 @@ import android.util.Log;
 import com.google.android.maps.*;
 import org.mixare.data.*; //For all database stuff
 import org.mixare.*;
+
+import java.util.Stack;
 
 /**
  * This class is responsible for all the MARTA public transit Routing
@@ -46,6 +50,15 @@ public class MartaRouting
 	private ArrayList<Stop> possibleStartStops;
 	private ArrayList<Stop> possibleDestStops;
 	
+	private int recursionDepth = 20;
+	
+	public Stack<TimeStop> tsStack;
+	
+	public TimeStopGraph tsg;
+	
+	public int solutions;
+	public int maxSolutions = 1;
+	
 	/**
 	 * 
 	 * 
@@ -67,6 +80,7 @@ public class MartaRouting
 		dbi = createDBI();
 		possibleStartStops = Stop.getStopsNear(startLat, startLng, NEARBY_DISTANCE);
 		possibleDestStops = Stop.getStopsNear(destLat, destLng, NEARBY_DISTANCE);
+		calculateRoute();
 		dbi.close();
 		dbi = null;
 	}
@@ -148,6 +162,55 @@ public class MartaRouting
 		return null;
 	}
 	
+	public void calculateRoute() {
+		tsg = new TimeStopGraph();
+		tsStack = new Stack<TimeStop>();
+		
+		solutions = 0;
+		Stop s;
+		
+		Time now = new Time(Calendar.getInstance().getTimeInMillis());
+		//logPrint(now.toString());
+		
+		
+		while (solutions < maxSolutions && null != (s = getNextStartStop()))
+		{
+			BredthFirstSearch(s, 5, new Time( Calendar.getInstance().getTimeInMillis()));
+		}
+		
+	}
+	
+	/**
+	 * Builds to tsg
+	 * 
+	 * @param origin
+	 * @param width numRoutes to search
+	 * @param time
+	 * @return
+	 */
+	public TimeStopGraph BredthFirstSearch(Stop origin, int width, Time time)
+	{
+		ArrayList<Route> routes = origin.getRoutesLeaving(time); //get routes servicing
+		
+		int count = 0;
+		for(Route r : routes)
+		{
+			if (count >= width)
+				break;
+			
+			tsStack.push(r.getFollowingStops(origin.stopid, time).get(0));
+
+			count++;
+		}
+		
+		return tsg;
+	}
+	
+	public void iterateBFS(TimeStop origin, int numRoute)
+	{
+		
+	}
+	
 	/**
 	 * Logs messages with MartaRouting tag so I can filter later
 	 * @param str
@@ -157,4 +220,14 @@ public class MartaRouting
 		Log.i("MartaRouting", str);
 	}
 	
+	public boolean isPossibleDestStop(TimeStop ts)
+	{
+		for (Stop s : possibleDestStops)
+		{
+			if (ts.isSameStopIgnoreTime(s))
+				return true;
+		}
+		
+		return false;
+	}
 }
