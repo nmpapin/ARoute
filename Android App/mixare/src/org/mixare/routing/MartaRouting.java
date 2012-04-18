@@ -2,6 +2,8 @@ package org.mixare.routing;
 
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 
@@ -19,6 +21,8 @@ public class MartaRouting
 {
 	public static boolean USE_DBDATAINTERFACE = true;
 	public int NEARBY_DISTANCE = 500; //TODO: Should be a constant
+	
+	protected static List<Map<String, Object>> lastQueryList;
 	
 	/**
 	 * Change with context change so that always uses correct context
@@ -39,6 +43,14 @@ public class MartaRouting
 	private ArrayList<Stop> possibleStartStops;
 	private ArrayList<Stop> possibleDestStops;
 	
+	/**
+	 * 
+	 * 
+	 * @param startLat
+	 * @param startLng
+	 * @param destLat
+	 * @param destLng
+	 */
 	public MartaRouting(double startLat, double startLng, double destLat,
 						double destLng)
 	{
@@ -102,9 +114,18 @@ public class MartaRouting
 	 * @return a DataInterface to use
 	 */
 	public static DataInterface createDBI()
-	{
+	{	
 		//TODO: if (USE_DBDATAINTERFACE)
 		
 		return new DataInterface(useContext);
+	}
+	
+	/**
+	 * Will return the route after it has been calculated
+	 * @return
+	 */
+	public ArrayList<RoutePoint> getRoute()
+	{
+		return null;
 	}
 }
