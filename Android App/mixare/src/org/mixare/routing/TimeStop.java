@@ -1,31 +1,51 @@
 package org.mixare.routing;
 
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 import org.mixare.data.DataInterface;
 
+import android.util.Log;
+
 import com.google.android.maps.GeoPoint;
 
-public class TimeStop
+public class TimeStop extends Stop
 {
 	int tStopID; //unique designator of "stopid"+"hours"+"mins"
-	int stopid;
+	
 	int stoptimeInMins; //Time of the stop in minutes
 	Time time;
-	double lat, lng;
 	
-	static Hashtable<Integer, TimeStop> allStops = new Hashtable<Integer, TimeStop>(600);
+	/* Inherited fields from Stop
+		//int stopid;
+		//double lat, lng;
+	*/
+	
+	public static int nearbyDistance = 500; //in meters
+	
+	static Hashtable<Integer, TimeStop> stopGraph = new Hashtable<Integer, TimeStop>(600);
 	
 	//to help keep track of efficiency
 	public static int numTimesDatabaseOpened = 0;
 	
-	public static TimeStop generateTimeStop(int stopid, Time stoptime,
+	/**
+	 * Only way to create a TimeStop to make sure no duplicates
+	 * 
+	 * @param stopid
+	 * @param stoptime
+	 * @param latitude
+	 * @param longitude
+	 * @return
+	 */
+	public static TimeStop createTimeStop(int stopid, Time stoptime,
 											double latitude, double longitude)
 	{
 		int tstopid = generateTimeStopID(stopid, stoptime);
-		if (allStops.containsKey(tstopid))
-			return allStops.get(tstopid);
+		if (stopGraph.containsKey(tstopid))
+			return stopGraph.get(tstopid);
 		else
 			return new TimeStop(tstopid, stopid, stoptime, latitude, longitude);
 	}
@@ -39,6 +59,7 @@ public class TimeStop
 	 */
 	private TimeStop(int tStopID, int stopid, Time stoptime, double latitude, double longitude)
 	{
+		super(stopid, latitude, longitude);
 		this.tStopID = tStopID;
 		this.stopid = stopid;
 		this.stoptimeInMins = stoptime.getHours()*60+stoptime.getMinutes();
@@ -46,8 +67,13 @@ public class TimeStop
 		lat = latitude;
 		lng = longitude;
 		
-		if (!allStops.containsKey(tStopID))
-			allStops.put(tStopID, this);
+		if (!stopGraph.containsKey(tStopID))
+			stopGraph.put(tStopID, this);
+	}
+	
+	public static void clearGraph()
+	{
+		stopGraph.clear();
 	}
 	
 	/**
@@ -73,21 +99,18 @@ public class TimeStop
 	
 	public static TimeStop getStop(int id)
 	{
-		return allStops.get(id);
+		return stopGraph.get(id);
 	}
 	
-	
-	//TODO: possible point of slow down if overuse this item
-	public static TimeStop getStopsNearby(double lat, double lng)
+	/**
+	 * Get stops within distance
+	 * 
+	 * @param distance
+	 * @return
+	 */
+	public ArrayList<Stop> getStopsNearby(int distance)
 	{
-		DataInterface dbi = MartaRouting.dbi; 
-		
-		if (dbi == null)
-			dbi = MartaRouting.createDBI(); //use this method so later will give DBDataInterface
-		
-		dbi.close();
-		
-		return null;
+		return super.getStopsNear(lat, lng, distance);
 	}
 	
 	public boolean equals(Object o)
@@ -100,5 +123,10 @@ public class TimeStop
 			return true;
 		else
 			return false;
+	}
+	
+	public boolean sameStopIgnoreTime(Stop s)
+	{
+		return super.equals(s);
 	}
 }

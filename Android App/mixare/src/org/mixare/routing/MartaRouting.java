@@ -1,6 +1,7 @@
 package org.mixare.routing;
 
 import java.sql.Time;
+import java.util.ArrayList;
 
 import android.content.Context;
 
@@ -17,6 +18,7 @@ import org.mixare.*;
 public class MartaRouting
 {
 	public static boolean USE_DBDATAINTERFACE = true;
+	public int NEARBY_DISTANCE = 500; //TODO: Should be a constant
 	
 	/**
 	 * Change with context change so that always uses correct context
@@ -30,6 +32,13 @@ public class MartaRouting
 	public double destLng;
 	public static DataInterface dbi; //null when not used, must always check and open
 	
+	public int startCounter = 0;
+	public int destCounter = 0;
+	public final int maxStopTries = 5;
+	
+	private ArrayList<Stop> possibleStartStops;
+	private ArrayList<Stop> possibleDestStops;
+	
 	public MartaRouting(double startLat, double startLng, double destLat,
 						double destLng)
 	{
@@ -37,6 +46,11 @@ public class MartaRouting
 		this.startLat = startLat;
 		this.destLng = destLng;
 		this.destLat = destLat;
+		
+		TimeStop.clearGraph(); //Clear timestop graph
+		
+		possibleStartStops = Stop.getStopsNear(startLat, startLng, NEARBY_DISTANCE);
+		possibleDestStops = Stop.getStopsNear(destLat, destLng, NEARBY_DISTANCE);
 	}
 	
 	/**
@@ -50,10 +64,36 @@ public class MartaRouting
 				dest.getLatitudeE6()/1000000, dest.getLongitudeE6()/1000000);
 	}
 	
-	/*public TimeStop findStartStop(Time time)
+	//TODO: implement to show only those stops with routes leaving them after certain time
+	/*public Stop findStartStop(Time time)
 	{
-		
 	}*/
+	
+	/**
+	 * Cycles through the possible start stops
+	 * 
+	 * @return start stop or null if counter exceeds max tries/starts found
+	 */
+	public Stop getNextStartStop()
+	{
+		if (startCounter < maxStopTries && startCounter < possibleStartStops.size())
+			return possibleStartStops.get(startCounter++); //increments after
+		else
+			return null;
+	}
+	
+	/**
+	 * Cycles through the possible destination stops
+	 * 
+	 * @return start stop or null if counter exceeds max tries/starts found
+	 */
+	public Stop getNextDestStop()
+	{
+		if (destCounter < maxStopTries && destCounter < possibleDestStops.size())
+			return possibleStartStops.get(startCounter++); //increments after
+		else
+			return null;
+	}
 	
 	/**
 	 * Handles all databaseinterface creation so can easily
