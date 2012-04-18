@@ -30,6 +30,8 @@ public class DataInterface
 	 */
 	public static final String DATA_URL_BASE = "http://nmpapin.heliohost.org/cs4261/";
 	
+	public static boolean includeMinorStops = false;
+	
 	//
 	// CTOR
 	//
@@ -165,6 +167,23 @@ public class DataInterface
 			return new ArrayList<Map<String, Object>>(0);
 		}
 	}
+	
+	
+	/**
+	 * GetNearbyStops method that will include minor stops if
+	 * static boolean includeMinorStops = true
+	 */
+	public  List<Map<String, Object>> getNearbyStops(double lat, double lng, double maxDistance)
+	{
+		//Not implemented yet
+		//if (includeMinorStops)
+		//{
+		//	//return getNearbyMinorStops(lat, lng, maxDistance);
+		//}
+		
+		return getNearbyMajorStops(lat, lng, maxDistance);
+	}
+	
 	
 	/**
 	 * Returns a list of the routes leaving the given stop after a given time.

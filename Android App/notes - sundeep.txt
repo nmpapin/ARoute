@@ -1,0 +1,16 @@
+Database
+Always close database interface when done routing or else leaving activity causes errors
+
+
+
+
+
+
+
+
+
+
+
+***************************TODO:
+Database
+	When DBDatabase finished, change MartaRouting.createDBI to use that instead

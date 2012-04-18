@@ -1,0 +1,1 @@
+Always close database interface when done routing or else leaving activity causes errors

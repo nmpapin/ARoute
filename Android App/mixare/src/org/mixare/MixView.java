@@ -91,7 +91,7 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 	private boolean isInited;
 	private MixContext mixContext;
 	static PaintScreen dWindow;
-	static DataView dataView;
+	public static DataView dataView;
 	private Thread downloadThread;
 
 	private float RTmp[] = new float[9];
