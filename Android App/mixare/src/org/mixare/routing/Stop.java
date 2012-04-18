@@ -256,12 +256,30 @@ public class Stop
 			return Route.getRoutesLeaving(stopid, time);
 		}
 		
-		//public static boolean isStation(int stopid)
-		//{
-		//	if (stations.containsKey(stopid))
-		//		return stations.get(stopid);
-		//	else
-		//		//TODO:
-		//
-		//}
+		public boolean isStation()
+		{
+			return isStation(stopid);
+		}
+		
+		public static boolean isStation(int stopid)
+		{
+			if(stations.get(stopid) != null)
+				return stations.get(stopid);
+			else
+			{
+				boolean isSta = MartaRouting.dbi.isStation(stopid);
+				stations.put(stopid, isSta);
+				return isSta;
+			}
+		}
+		
+		public double distanceToStop(double fromLat, double fromLng)
+		{
+			return distanceToStop(fromLat, fromLng, stopid);
+		}
+		
+		public static double distanceToStop(double fromLat, double fromLng, int stopid)
+		{
+			return MartaRouting.dbi.distanceToStop(fromLat, fromLng, stopid);
+		}
 }

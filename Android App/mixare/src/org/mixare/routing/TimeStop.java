@@ -14,10 +14,10 @@ import com.google.android.maps.GeoPoint;
 
 public class TimeStop extends Stop
 {
-	int tStopID; //unique designator of "stopid"+"hours"+"mins"
+	public int tStopID; //unique designator of "stopid"+"hours"+"mins"
 	
-	int stoptimeInMins; //Time of the stop in minutes
-	Time time;
+	public int stoptimeInMins; //Time of the stop in minutes
+	public Time time;
 	
 	/* Inherited fields from Stop
 		//int stopid;
@@ -92,6 +92,7 @@ public class TimeStop extends Stop
 		this.tStopID = tStopID;
 		this.stopid = stopid;
 		this.stoptimeInMins = stoptime.getHours()*60+stoptime.getMinutes();
+		this.time = stoptime;
 		
 		lat = latitude;
 		lng = longitude;
@@ -169,7 +170,7 @@ public class TimeStop extends Stop
 			return false;
 		TimeStop ts = (TimeStop) o;
 		
-		if (tStopID == ts.tStopID)
+		if (tStopID == ts.tStopID && time.toString().equals(ts.time.toString()))
 			return true;
 		else
 			return false;

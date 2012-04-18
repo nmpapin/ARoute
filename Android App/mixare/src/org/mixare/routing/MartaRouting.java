@@ -134,7 +134,7 @@ public class MartaRouting
 	{	
 		//TODO: if (USE_DBDATAINTERFACE)
 		
-		return new DataInterface(useContext);
+		return new DBDataInterface(useContext);
 	}
 	
 	/**
