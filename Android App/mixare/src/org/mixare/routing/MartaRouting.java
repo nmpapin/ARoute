@@ -3,9 +3,11 @@ package org.mixare.routing;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Calendar;
+import java.util.Queue;
 
 import android.content.Context;
 import android.util.Log;
@@ -52,7 +54,7 @@ public class MartaRouting
 	
 	private int recursionDepth = 20;
 	
-	public Stack<TimeStop> tsStack;
+	public Queue<TimeStop> tsQueue;
 	
 	public TimeStopGraph tsg;
 	
@@ -164,7 +166,7 @@ public class MartaRouting
 	
 	public void calculateRoute() {
 		tsg = new TimeStopGraph();
-		tsStack = new Stack<TimeStop>();
+		tsQueue = new LinkedList<TimeStop>();
 		
 		solutions = 0;
 		Stop s;
@@ -175,7 +177,8 @@ public class MartaRouting
 		
 		while (solutions < maxSolutions && null != (s = getNextStartStop()))
 		{
-			BredthFirstSearch(s, 5, new Time( Calendar.getInstance().getTimeInMillis()));
+			//Default width = 5 and depth = 2
+			ModBredthFirstSearch(s, 5, new Time( Calendar.getInstance().getTimeInMillis()), 2);
 		}
 		
 	}
@@ -186,9 +189,10 @@ public class MartaRouting
 	 * @param origin
 	 * @param width numRoutes to search
 	 * @param time
+	 * @param depth	how many successive stops to push at a time (pseudo dfs now)
 	 * @return
 	 */
-	public TimeStopGraph BredthFirstSearch(Stop origin, int width, Time time)
+	public TimeStopGraph ModBredthFirstSearch(Stop origin, int width, Time time, int depth)
 	{
 		ArrayList<Route> routes = origin.getRoutesLeaving(time); //get routes servicing
 		
@@ -198,17 +202,63 @@ public class MartaRouting
 			if (count >= width)
 				break;
 			
-			tsStack.push(r.getFollowingStops(origin.stopid, time).get(0));
-
+			TimeStop ts = r.getFollowingStops(origin.stopid, time).get(0);
+			ts.isStartStop = true;
+			enqueu(ts);
+			
+			//push depth # stops (right now = two) at a time to make a pseudo DFS
+			for (int i = 1; i < depth; i++)
+			{
+				enqueu(r.getFollowingStops(origin.stopid, time).get(i));
+			}
 			count++;
 		}
 		
 		return tsg;
 	}
 	
-	public void iterateBFS(TimeStop origin, int numRoute)
+	/**
+	 * Ensures don't push the same TimeStop
+	 * @param ts
+	 */
+	public void enqueu(TimeStop ts)
 	{
+		if (ts.enqueued)
+			return;
 		
+		if (isPossibleDestStop(ts))
+		{
+			ts.enqueued = true;
+			solutions++;
+		}
+		
+		ts.enqueued = true;
+		tsQueue.add(ts);
+	}
+	
+	/**
+	 * Pops a TimeStop and sets popped = true;
+	 * @return
+	 */
+	public TimeStop dequeue()
+	{
+		TimeStop ts = tsQueue.poll();
+		ts.dequeued = true;
+		return ts;
+	}
+	
+	public void iterateBFS(TimeStop origin, int maxIteration)
+	{
+		int iterations = 0;
+		while (solutions < maxSolutions && !(tsQueue.isEmpty()))
+		{
+			TimeStop ts = dequeue();
+			//Check if solution - already took care of
+			for(Route r : ts.getRoutesLeaving())
+			{
+				
+			}
+		}
 	}
 	
 	/**

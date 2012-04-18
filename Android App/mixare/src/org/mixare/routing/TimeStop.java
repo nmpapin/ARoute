@@ -27,7 +27,8 @@ public class TimeStop extends Stop
 	public int stoptimeInMins; //Time of the stop in minutes
 	public Time time;
 	public boolean visited = false;
-	public boolean pushed = false;
+	public boolean enqueued = false;
+	public boolean dequeued = false;
 	
 	/* Inherited fields from Stop
 		//int stopid;
@@ -35,6 +36,7 @@ public class TimeStop extends Stop
 		//String name;
 	*/
 	
+	public boolean isStartStop = false;
 	public boolean isDestStop = false;
 	
 	public static int nearbyDistance = 500; //in meters
