@@ -216,12 +216,15 @@ public class MartaRouting
 				int rb = routesBuilding.get(i);
 				TimeStop d = dests.get(rb);
 				
+				logPrintImportant("dist " + distance(d.lat,d.lng,startLat,startLng));
+				logPrintImportant("time " + d.time);
 				if(d.isStartStop)
 				{
 					toRemove.add(i);
 				}
 				else
 				{
+					logPrintImportant("Got Previous");
 					Edge e = tsg.previousEdges(d).get(0);
 					TimeStop p = tsg.previousStop(e);
 					RoutePoint rp = routes.get(rb).get(routes.get(rb).size() - 1);
@@ -569,7 +572,11 @@ public class MartaRouting
 				for (TimeStop t2 : stops)
 				{
 					//TODO: check that breaks inner loop only
-					if(count > depth-1)
+						
+					if(t2.equals(ts))
+						continue;
+					
+					if(t2 == null || count > depth-1)
 						break;
 					if (t2 == null || ts == t2)
 						continue;

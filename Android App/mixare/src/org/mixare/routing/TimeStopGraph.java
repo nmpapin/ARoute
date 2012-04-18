@@ -128,6 +128,8 @@ public class TimeStopGraph
 					t1out.add(this);
 				}
 				
+				Log.i("TRARARARAR", "HERE WE GO!");
+				
 				//Add t1 to t2's incoming edges
 				if (!inEdges.contains(t2.tStopID))
 					inEdges.put(t2.tStopID, new ArrayList<Edge>());
