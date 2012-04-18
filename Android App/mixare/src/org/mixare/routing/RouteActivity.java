@@ -13,6 +13,7 @@ import android.util.Log;
 import java.io.File;
 import java.util.*;
 
+import org.mixare.MixView;
 import org.mixare.R;
 import org.mixare.maps.*;
 
@@ -27,6 +28,16 @@ public class RouteActivity extends MapActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.walkingmap);
         Intent startIntent = getIntent();
+        Location destLoc = startIntent.getExtras().getParcelable("location");
+        Location startLoc = MixView.dataView.getContext().getCurrentLocation();
+        
+        // Starting Location
+        double startLat = startLoc.getLatitude();
+        double startLng = startLoc.getLongitude();
+        
+        // Ending Location
+        double endLat = destLoc.getLatitude();
+        double endLng = destLoc.getLongitude();
         
         /* Set zoom capability */
         MapView mapView = (MapView) findViewById(R.id.mapview);
@@ -36,12 +47,12 @@ public class RouteActivity extends MapActivity {
         List<Overlay> mapOverlays = mapView.getOverlays();
         
         //Library starting location
-        double startLat = 33.775366;
-        double startLng = -84.39517;
+        startLat = 33.775366;
+        startLng = -84.39517;
         
         //Kroger ending location
-        double destLat = 33.803186;
-        double destLng = -84.41328;
+        endLat = 33.803186;
+        endLng = -84.41328;
         
         //Bus locations
         double bus1Lat = 33.781197;
@@ -103,7 +114,7 @@ public class RouteActivity extends MapActivity {
         mapOverlays.add(walkToDest);
         
         //exit bus route
-        point = new GeoPoint((int) (destLat * 1e6), (int) (destLng*1e6)); //specified in microdegrees (lat, long)
+        point = new GeoPoint((int) (endLat * 1e6), (int) (endLng*1e6)); //specified in microdegrees (lat, long)
         OverlayItem overlayitem4 = new OverlayItem(point, "7:34am:	Arrive 1715 Howell Mill Road Northwest, Atlanta, GA 30318", "Travel Time: 29 minutes");
         staroverlay.addOverlay(overlayitem4); //add point to overlay list
         
