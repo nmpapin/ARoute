@@ -65,7 +65,6 @@ public class MartaRouting
 		dbi = createDBI();
 		possibleStartStops = Stop.getStopsNear(startLat, startLng, NEARBY_DISTANCE);
 		possibleDestStops = Stop.getStopsNear(destLat, destLng, NEARBY_DISTANCE);
-		
 		dbi.close();
 		dbi = null;
 	}
