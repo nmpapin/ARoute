@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.android.maps.*;
 import org.mixare.data.*; //For all database stuff
@@ -20,7 +21,7 @@ import org.mixare.*;
 public class MartaRouting
 {
 	public static boolean USE_DBDATAINTERFACE = true;
-	public int NEARBY_DISTANCE = 500; //TODO: Should be a constant
+	public int NEARBY_DISTANCE = 2000; //TODO: Should be a constant
 	
 	protected static List<Map<String, Object>> lastQueryList;
 	
@@ -38,7 +39,7 @@ public class MartaRouting
 	
 	public int startCounter = 0;
 	public int destCounter = 0;
-	public final int maxStopTries = 5;
+	public final int maxStopTries = 10;
 	
 	private ArrayList<Stop> possibleStartStops;
 	private ArrayList<Stop> possibleDestStops;
@@ -54,15 +55,31 @@ public class MartaRouting
 	public MartaRouting(double startLat, double startLng, double destLat,
 						double destLng)
 	{
-		this.startLng = startLng;
 		this.startLat = startLat;
-		this.destLng = destLng;
+		this.startLng = startLng;
 		this.destLat = destLat;
+		this.destLng = destLng;
 		
 		TimeStop.clearGraph(); //Clear timestop graph
 		
+		dbi = createDBI();
 		possibleStartStops = Stop.getStopsNear(startLat, startLng, NEARBY_DISTANCE);
 		possibleDestStops = Stop.getStopsNear(destLat, destLng, NEARBY_DISTANCE);
+		dbi.close();
+		dbi = null;
+	}
+	
+	public static MartaRouting MartaRoutingTestShort()
+	{
+		//Library starting location
+        double startLat = 33.775366;
+        double startLng = -84.39517;
+        
+        //Kroger ending location
+        double destLat = 33.803186;
+        double destLng = -84.41328;
+        
+        return new MartaRouting(startLat, startLng, destLat, destLng);
 	}
 	
 	/**
@@ -128,4 +145,14 @@ public class MartaRouting
 	{
 		return null;
 	}
+	
+	/**
+	 * Logs messages with MartaRouting tag so I can filter later
+	 * @param str
+	 */
+	public static void logPrint(String str)
+	{
+		Log.i("MartaRouting", str);
+	}
+	
 }
