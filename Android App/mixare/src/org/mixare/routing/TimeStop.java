@@ -12,6 +12,7 @@ public class TimeStop
 	int tStopID; //unique designator of "stopid"+"hours"+"mins"
 	int stopid;
 	int stoptimeInMins; //Time of the stop in minutes
+	Time time;
 	double lat, lng;
 	
 	static Hashtable<Integer, TimeStop> allStops = new Hashtable<Integer, TimeStop>(600);
@@ -82,11 +83,11 @@ public class TimeStop
 		DataInterface dbi = MartaRouting.dbi; 
 		
 		if (dbi == null)
-			dbi = new MartaRouting.createDBI(); //use this method so later will give DBDataInterface
-		
-		public  List<Map<String, Object>> getNearbyStops(double lat, double lng, double maxDistance)
+			dbi = MartaRouting.createDBI(); //use this method so later will give DBDataInterface
 		
 		dbi.close();
+		
+		return null;
 	}
 	
 	public boolean equals(Object o)

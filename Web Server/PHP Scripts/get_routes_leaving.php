@@ -48,7 +48,7 @@
 				"SELECT stop_time
 				FROM routing_route_time
 				WHERE route_stop_id = ".$route['route_stop_id']." 
-				AND stop_time >= '$time'
+				AND stop_time >= '00:00:00'
 				ORDER BY stop_time ASC
 				LIMIT 1;"
 			);

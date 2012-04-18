@@ -4,6 +4,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +18,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.format.Time;
+import android.location.Location;
+
+import java.sql.Time;
 
 public class RoutingDataBaseHelper extends SQLiteOpenHelper 
 {
@@ -150,7 +156,9 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 		);
 		
 		cur.moveToFirst();
-		return distance(lat, lng, cur);
+		double d = distance(lat, lng, cur);
+		cur.close();
+		return d;
 	}
 	
 	private double distance(double lat, double lng, Cursor cur)
@@ -172,17 +180,291 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 	
 	public List<Map<String, Object>> getRoutesLeaving(int stop, String time)
 	{
-		Cursor cur = mDataBase.rawQuery
+		List<Map<String, Object>> ret = new ArrayList<Map<String, Object>>();
+		
+		Cursor route = mDataBase.rawQuery
 		(
-			"SELECT DISTINCT rv.id, r.marta_id, r.name, rv.direction, rs.id AS route_stop_id " +
+			"SELECT DISTINCT rv._id, r.marta_id, r.name, rv.direction, rs._id AS route_stop_id " +
 			"FROM route AS r " +
-			"JOIN route_variation AS rv ON r.id = rv.route_id " +
-			"JOIN route_stop AS rs ON rv.id = rs.route_var_id " +
-			"JOIN stop AS s ON rs.stop_id = s.id " + 
-			"WHERE s.id = " + stop + ";", 
+			"JOIN route_variation AS rv ON r._id = rv.route_id " +
+			"JOIN route_stop AS rs ON rv._id = rs.route_var_id " +
+			"JOIN stop AS s ON rs.stop_id = s._id " + 
+			"WHERE s._id = " + stop + ";", 
 			new String[0]
 		);
 		
-		return null;
+		route.moveToFirst();
+		while(route.isAfterLast() == false) 
+		{
+			Map<String, Object> m = new HashMap<String, Object>();
+			m.put("route_id", route.getInt(route.getColumnIndex("_id")));
+			m.put("marta_id", route.getString(route.getColumnIndex("marta_id")));
+			m.put("name", route.getString(route.getColumnIndex("name")));
+			m.put("direction", route.getString(route.getColumnIndex("direction")));
+			
+            Cursor t = mDataBase.rawQuery
+            (
+        		"SELECT stop_time " +
+    			"FROM route_time " +
+    			"WHERE route_stop_id = " + route.getInt(route.getColumnIndex("route_stop_id")) + 
+    			" AND stop_time >= '" + time + "' " +
+    			"ORDER BY stop_time ASC " +
+    			"LIMIT 1;", 
+            	new String[0]
+            );			
+			
+            if(t.getCount() < 1)
+            {
+            	t.close();
+            	t = mDataBase.rawQuery
+                (
+	        		"SELECT stop_time " +
+	    			"FROM route_time " +
+	    			"WHERE route_stop_id = " + route.getInt(route.getColumnIndex("route_stop_id")) + 
+	    			" AND stop_time >= '00:00:00' " +
+	    			"ORDER BY stop_time ASC " +
+	    			"LIMIT 1;", 
+	            	new String[0]
+                );
+            	
+            	if(t.getCount() > 0)
+            	{
+            		t.moveToFirst();
+            		m.put("next_time", Time.valueOf(route.getString(route.getColumnIndex("stop_time"))));
+            		ret.add(m);
+            	}
+            }
+            else
+            {
+            	t.moveToFirst();
+        		m.put("next_time", Time.valueOf(route.getString(route.getColumnIndex("stop_time"))));
+        		ret.add(m);
+            }
+            t.close();
+            
+            route.moveToNext();
+        }
+		route.close();
+		
+		return ret;
+	}
+	
+	public List<Map<String, Object>> getFollowingStops(int route, int stop, String time)
+	{
+		List<Map<String, Object>> ret = new ArrayList<Map<String, Object>>();
+		
+		Cursor order = mDataBase.rawQuery
+		(
+			"SELECT route_order " +
+			"FROM route_stop AS rs " +
+			"JOIN stop AS s ON rs.stop_id = s._id " +
+			"WHERE s._id = " + stop +
+			" AND rs.route_var_id = " + route + 
+			" LIMIT 1;",
+			new String[0]
+		);
+			
+		if(order.getCount() < 1)
+		{
+			return ret;
+		}
+		
+		order.moveToFirst();
+		int orderNum = order.getInt(order.getColumnIndex("route_order"));
+		order.close();
+		
+		Cursor stops = mDataBase.rawQuery
+		(
+			"SELECT _id, stop_id " +
+			"FROM route_stop " +
+			"WHERE route_order >= " + orderNum +
+			" AND route_var_id = " + route + 
+			" ORDER BY route_order ASC;",
+			new String[0]
+		);
+		
+		if(stops.getCount() < 2)
+		{
+			return ret;
+		}
+		
+		stops.moveToFirst();
+		int startStopId = stops.getInt(stops.getColumnIndex("_id"));		
+		stops.moveToNext();
+		
+		Cursor startT = mDataBase.rawQuery
+		(
+			"SELECT stop_time " +
+			"FROM route_time " +
+			"WHERE route_stop_id = " + startStopId + 
+			" AND stop_time >= '" + time + "' " +
+			"ORDER BY stop_time ASC " +
+			"LIMIT 1;",
+			new String[0]
+		);
+		
+		if(startT.getCount() < 1)
+        {
+			startT.close();
+			startT = mDataBase.rawQuery
+            (
+        		"SELECT stop_time " +
+    			"FROM route_time " +
+    			"WHERE route_stop_id = " + startStopId + 
+    			" AND stop_time >= '00:00:00' " +
+    			"ORDER BY stop_time ASC " +
+    			"LIMIT 1;", 
+            	new String[0]
+            );
+        	
+        	if(startT.getCount() < 1)
+        	{
+        		return ret;
+        	}
+        }
+		
+		String startTimeStr;
+		startT.moveToFirst();
+        startTimeStr = startT.getString(startT.getColumnIndex("stop_time"));
+        startT.close();
+		
+        while(stops.isAfterLast() == false) 
+		{
+        	Map<String, Object> m = new HashMap<String, Object>();
+			m.put("stop_id", stops.getInt(stops.getColumnIndex("stop_id")));
+        	
+        	int cid = stops.getInt(stops.getColumnIndex("_id"));
+        	startT = mDataBase.rawQuery
+            (
+        		"SELECT stop_time " +
+    			"FROM route_time " +
+    			"WHERE route_stop_id = " + cid + 
+    			" AND stop_time >= '" + startTimeStr + "' " +
+    			"ORDER BY stop_time ASC " +
+    			"LIMIT 1;", 
+            	new String[0]
+            );
+        	
+        	if(startT.getCount() < 1)
+            {
+    			startT.close();
+    			startT = mDataBase.rawQuery
+                (
+            		"SELECT stop_time " +
+        			"FROM route_time " +
+        			"WHERE route_stop_id = " + cid + 
+        			" AND stop_time >= '00:00:00' " +
+        			"ORDER BY stop_time ASC " +
+        			"LIMIT 1;", 
+                	new String[0]
+                );
+            	
+            	if(startT.getCount() < 1)
+            	{
+            		return ret;
+            	}
+            }
+        	
+        	startT.moveToFirst();
+            startTimeStr = startT.getString(startT.getColumnIndex("stop_time"));
+            startT.close();
+            
+            m.put("time", Time.valueOf(startTimeStr));
+            ret.add(m);
+            
+            stops.moveToNext();
+		}
+        stops.close();
+        
+		return ret;
+	}
+	
+	public boolean isStation(int stop)
+	{
+		Cursor number = mDataBase.rawQuery
+		(
+			"SELECT count(DISTINCT r._id) AS number " +
+			"FROM stop AS s " +
+			"JOIN route_stop AS rs ON s._id = rs.stop_id " +
+			"JOIN route_variation AS rv ON rs.route_var_id = rv._id " +
+			"JOIN route AS r ON rv.route_id = r._id " +
+			"WHERE s._id = " + stop +
+			" AND r.type = 'Train';",
+			new String[0]
+		);
+		
+		number.moveToFirst();
+		int num = number.getInt(number.getColumnIndex("number"));
+		number.close();
+		
+		return (num > 0);
+	}
+	
+	public Location getStopCoords(int stop)
+	{
+		Cursor coords = mDataBase.rawQuery
+		(
+			"SELECT latitude, longitude " +
+			"FROM stop " + 
+			"WHERE id = " + stop + ";",
+			new String[0]
+		);
+		
+		coords.moveToFirst();
+		double lat = coords.getDouble(coords.getColumnIndex("latitude"));
+		double lng = coords.getDouble(coords.getColumnIndex("longitude"));
+		coords.close();
+		
+		Location loc = new Location("ARouteDataInterface");
+		loc.setLatitude(lat);
+		loc.setLongitude(lng);
+		return loc;
+	}
+	
+	public List<Map<String, Object>> getNearbyMajorStops(double lat, double lng, double maxDistance)
+	{
+		List<Map<String, Object>> ret = new ArrayList<Map<String, Object>>();
+		
+		Cursor stops = mDataBase.rawQuery
+		(
+			"SELECT * " +
+			"FROM stop;",
+			new String[0]
+		);
+		
+		stops.moveToFirst();
+		while(stops.isAfterLast() == false) 
+		{
+			Map<String, Object> m = new HashMap<String, Object>();
+			m.put("stop_id", stops.getInt(stops.getColumnIndex("_id")));
+			m.put("name", stops.getString(stops.getColumnIndex("name")));
+			m.put("latitude", stops.getDouble(stops.getColumnIndex("latitude")));
+			m.put("longitude", stops.getDouble(stops.getColumnIndex("longitude")));
+			
+			double dist = distance(lat, lng, stops);
+			
+			if(dist <= maxDistance)
+			{
+				m.put("distance", dist);
+				ret.add(m);
+			}
+			
+			stops.moveToNext();
+		}
+		stops.close();
+		
+		Collections.sort(ret, new Comparator<Map<String, Object>>()
+		{
+			@Override
+			public int compare(Map<String, Object> lhs, Map<String, Object> rhs) 
+			{
+				double d1 = (Double)lhs.get("distance");
+				double d2 = (Double)rhs.get("distance");
+				
+				return Double.compare(d1, d2);
+			}
+		});
+		
+		return ret;
 	}
 }
