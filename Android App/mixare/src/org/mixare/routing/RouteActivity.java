@@ -49,12 +49,12 @@ public class RouteActivity extends MapActivity {
         List<Overlay> mapOverlays = mapView.getOverlays();
         
         //Library starting location
-        startLat = 33.775366;
-        startLng = -84.39517;
+        //startLat = 33.775366;
+        //startLng = -84.39517;
         
         //Kroger ending location
-        endLat = 33.803186;
-        endLng = -84.41328;
+        //endLat = 33.803186;
+        //endLng = -84.41328;
         
         MartaRouting mr = new MartaRouting(startLat, startLng, endLat, endLng);
         List<RoutePoint> route = mr.getRoute();
@@ -113,21 +113,37 @@ public class RouteActivity extends MapActivity {
         	// Add on bus start point overlay
         	RoutePoint rp = route.get(i);
         	OverlayItem rpOverlay = new OverlayItem(rp.location, rp.title, rp.snippet);
-        	busoverlay.addOverlay(rpOverlay);
+        	if(rp.type.equals("walking"))
+        		walkingoverlay.addOverlay(rpOverlay);
+        	else
+        		busoverlay.addOverlay(rpOverlay);
         	
         	// Add route map portion
         	if(rp.nextRoutePoint != null)
         	{
         		GeoPoint startPoint = rp.location;
         		GeoPoint endPoint = rp.nextRoutePoint.location;
-        		ArrayList<GeoPoint> rpPoints = (ArrayList<GeoPoint>)router.getRouteGeoPoints
-        		(
-        			startPoint.getLatitudeE6() / 1e6, 
-        			startPoint.getLongitudeE6() / 1e6, 
-    				endPoint.getLatitudeE6() / 1e6, 
-    				endPoint.getLongitudeE6() / 1e6, 
-    				"driving"
-        		);
+        		String type = rp.type;
+        		ArrayList<GeoPoint> rpPoints;
+        		
+        		if(!type.equals("rail"))
+        		{
+	        		String rtype = type.equals("walking") ? "walking" : "bus";
+	        		rpPoints = (ArrayList<GeoPoint>)router.getRouteGeoPoints
+	        		(
+	        			startPoint.getLatitudeE6() / 1e6, 
+	        			startPoint.getLongitudeE6() / 1e6, 
+	    				endPoint.getLatitudeE6() / 1e6, 
+	    				endPoint.getLongitudeE6() / 1e6, 
+	    				rtype
+	        		);
+        		}
+        		else
+        		{
+        			rpPoints = new ArrayList<GeoPoint>();
+        			rpPoints.add(startPoint);
+        			rpPoints.add(endPoint);
+        		}
         		
         		RouteOverlay busCourse = new RouteOverlay(mapView, Color.GREEN, rpPoints);
         		mapOverlays.add(busCourse);
