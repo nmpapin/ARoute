@@ -22,12 +22,14 @@ public class TimeStopGraph
 		
 	}
 	
-	public ArrayList<TimeStop> previousStops(TimeStop end)
+	public ArrayList<Edge> previousEdges(TimeStop end)
 	{
-		ArrayList<Edge> in = inEdges.get(end);
-		ArrayList<TimeStop> prevStops = new ArrayList<TimeStop>();
-		
-		
+		return inEdges.get(end);
+	}
+	
+	public TimeStop previousStop(Edge edge)
+	{
+		return edge.t1;
 	}
 	
 	public class Edge

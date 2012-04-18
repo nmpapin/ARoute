@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.google.android.maps.*;
 import org.mixare.data.*; //For all database stuff
+import org.mixare.routing.TimeStopGraph.Edge;
 import org.mixare.*;
 
 import java.util.Stack;
@@ -157,10 +158,78 @@ public class MartaRouting
 	 * Will return the route after it has been calculated
 	 * @return
 	 */
-	public ArrayList<RoutePoint> getRoute(TimeStopGraph graph)
+	public ArrayList<RoutePoint> getRoute()
 	{
-		return null;
+		int count = 0;
+		ArrayList<TimeStop> dests = new ArrayList<TimeStop>();
+		ArrayList<Integer> routesBuilding = new ArrayList<Integer>();
+		ArrayList<ArrayList<RoutePoint>> routes = new ArrayList<ArrayList<RoutePoint>>();
+		for(TimeStop t : tsg.timeNodes)
+		{
+			if(t.isDestStop)
+			{
+				dests.add(t);
+				routes.add(new ArrayList<RoutePoint>());
+				routes.get(count).add(new RoutePoint
+				(
+					t.lat, 
+					t.lng, 
+					"walking", 
+					"Walk to Destination", 
+					"Approximately " + distance(destLat, destLng, t.lat, t.lng) + " kilometers.", 
+					t.time, 
+					null
+				));
+				
+				
+				routesBuilding.add(count++);
+			}
+		}
+		
+		while(routesBuilding.size() > 0)
+		{
+			ArrayList<Integer> toRemove = new ArrayList<Integer>();
+			
+			for(int i = 0; i < routesBuilding.size(); i++)
+			{				
+				int rb = routesBuilding.get(i);
+				TimeStop d = dests.get(rb);
+				
+				if(d.isStartStop)
+				{
+					toRemove.add(i);
+				}
+				else
+				{
+					Edge e = tsg.previousEdges(d).get(0);
+					TimeStop p = tsg.previousStop(e);
+					RoutePoint rp = routes.get(rb).get(routes.get(rb).size() - 1);
+					
+					routes.get(rb).add(new RoutePoint
+					(
+						p.lat, 
+						p.lng, 
+						"bus", 
+						"Take Route " + e.r.martaID + " from stop " + p.name + " to " + d.name + ".", 
+						"Approximately " + distance(p.lat, p.lng, d.lat, d.lng) + " kilometers.", 
+						p.time, 
+						rp
+					));
+					
+					dests.set(rb, p);
+				}
+			}
+			
+			for(Integer i : toRemove)
+			{
+				routesBuilding.remove(i);
+			}
+		}		
+		
+		return routes.get(0);
 	}
+	
+	
 	
 	public void calculateRoute() {
 		tsg = new TimeStopGraph();
@@ -229,5 +298,22 @@ public class MartaRouting
 		}
 		
 		return false;
+	}
+	
+	private double distance(double lat, double lng, double lat2, double lng2)
+	{
+		double cLat = lat2;
+		double cLng = lng2;
+		final int R = 6371; // Radious of the earth in meters
+		
+		Double latDistance = Math.toRadians(cLat-lat);
+		Double lonDistance = Math.toRadians(cLng-lng);
+		Double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) + 
+				   Math.cos(Math.toRadians(lat)) * Math.cos(Math.toRadians(cLat)) * 
+				   Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+		Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+		Double distance = R * c;
+		
+		return distance;
 	}
 }
