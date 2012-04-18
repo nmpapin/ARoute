@@ -192,15 +192,15 @@ public class DBDataInterface extends DataInterface
 	}
 	
 	@Override
-	public Map<String, Object> getData(int stop)
+	public Map<String, Object> getStopData(int stop)
 	{
 		if(mDB != null)
 		{
-			return mDB.getData(stop);
+			return mDB.getStopData(stop);
 		}
 		else
 		{
-			return super.getData(stop);
+			return super.getStopData(stop);
 		}
 	}
 }

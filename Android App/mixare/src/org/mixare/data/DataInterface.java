@@ -274,7 +274,7 @@ public class DataInterface
 	/**
 	 * Returns the name of the given stop.
 	 */
-	public Map<String, Object> getData(int stop)
+	public Map<String, Object> getStopData(int stop)
 	{
 		String url = DATA_URL_BASE + "is_station.php?stop=" + stop;
 		

@@ -472,7 +472,7 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 		return ret;
 	}
 	
-	public Map<String, Object> getData(int stop)
+	public Map<String, Object> getStopData(int stop)
 	{
 		Map<String, Object> m = new HashMap<String, Object>();
 		Cursor stops = mDataBase.rawQuery
