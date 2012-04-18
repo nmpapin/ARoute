@@ -1,0 +1,22 @@
+Routing Idea:
+
+Create MartaRouting object
+
+MartaRouting.getRoute
+	returns ArrayList of all the Transit stops and directions	
+	 contains all the transit markers, directions, time, etc...
+
+	begins with first marta stop, ends with last marta stop
+
+Drawing Route - Separate into 3 different methods for better maintainability
+
+1. Use RoutePoint.getOverlay to draw all the overlay icons on map
+
+2. Connect RoutePoints with RouteOverlay (draws line)
+	generate waypoints using
+		Using Routing class with "walking" if walking stop
+		Using Routing Class with "driving" if bus stop
+	No way points if Rail (straight line)
+
+3. Add walking overlay to/from start and end stops using existing code
+	I will modify this function if time to include actual walking turn directions
