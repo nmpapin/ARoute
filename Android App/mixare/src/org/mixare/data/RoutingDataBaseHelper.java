@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
@@ -20,19 +21,24 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 	//The Android's default system path of your application database.
     private static String DB_PATH = "/data/data/org.mixare/databases/";
  
-    private static String DB_NAME = "routing_data";
+    private static String DB_NAME = "routing_database";
  
     private SQLiteDatabase mDataBase; 
  
     private final Context mContext;
 	
-	
+	//
+    // CTOR
+    //
 	public RoutingDataBaseHelper(Context context) 
 	{
 		super(context, DB_NAME, null, 1);
 		mContext = context;
 	}
 
+	//
+	// Book Keeping
+	//
 	public void createDataBase() throws IOException
 	{
 		 
@@ -45,7 +51,7 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
     	else
     	{
     		//By calling this method and empty database will be created into the default system path
-               //of your application so we are gonna be able to overwrite that database with our database.
+            //of your application so we are gonna be able to overwrite that database with our database.
         	this.getReadableDatabase();
  
         	try 
@@ -125,4 +131,28 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
  
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
+	
+	//
+	// DB Interface
+	//
+	public double distanceToStop(double lat, double lng, int stop)
+	{
+		mDataBase.rawQuery
+		(
+				"SELECT latitude, longitude" +
+				"FROM stop" +
+				"WHERE _id = $stop" +
+				"ORDER BY distance ASC;", 
+				new String[0]
+		);
+		
+		
+		return 0;
+	}
+	
+	private double distance(double lat, double lng, Cursor c)
+	{
+		
+		return 0;
+	}
 }

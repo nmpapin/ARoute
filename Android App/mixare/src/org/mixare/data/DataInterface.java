@@ -8,13 +8,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.text.format.Time;
@@ -27,10 +30,24 @@ public class DataInterface
 	 */
 	public static final String DATA_URL_BASE = "http://nmpapin.heliohost.org/cs4261/";
 	
+	//
+	// CTOR
+	//
+	public DataInterface(Context ctx){}
+	
+	//
+	// INTERFACE METHODS
+	//
+	/**
+	 * Closes the database.
+	 * Important to do this when you are done using the data interface.
+	 */
+	public void close(){}
+	
 	/**
 	 * Returns the distance to the stop denoted by the given id from the given coordinates.
 	 */
-	public static double distanceToStop(double lat, double lng, int stop)
+	public double distanceToStop(double lat, double lng, int stop)
 	{
 		String url = DATA_URL_BASE + "distance_to_stop.php?latitude=" + lat + "&longitude=" + lng + "&stop=" + stop;
 		
@@ -48,7 +65,7 @@ public class DataInterface
 	/**
 	 * Gets all following stops that are denoted as "stations" and their next times.
 	 */
-	public static JSONArray getFollowingStations(int route, int stop, Time time)
+	public List<Map<String, Object>> getFollowingStations(int route, int stop, Time time)
 	{
 		String url = DATA_URL_BASE + "get_following_stations.php?route=" + route + "&stop=" + stop;
 		if(time != null)
@@ -58,18 +75,30 @@ public class DataInterface
 		
 		try 
 		{
-			return new JSONArray(getURLContents(url));
+			List<Map<String, Object>> ret = new ArrayList<Map<String, Object>>();
+			
+			JSONArray arr = new JSONArray(getURLContents(url));
+			for(int i = 0; i < arr.length(); i++)
+			{
+				JSONObject station = arr.getJSONObject(i);
+				Map<String, Object> m = new HashMap<String, Object>();
+				m.put("stop_id", station.get("stop_id"));
+				m.put("time", station.get("time"));
+				ret.add(m);
+			}
+			
+			return ret;
 		} 
 		catch (JSONException e) 
 		{
-			return null;
+			return new ArrayList<Map<String, Object>>(0);
 		}
 	}
 	
 	/**
 	 * Gets all following stops and their next times.
 	 */
-	public static JSONArray getFollowingStops(int route, int stop, Time time)
+	public List<Map<String, Object>> getFollowingStops(int route, int stop, Time time)
 	{
 		String url = DATA_URL_BASE + "get_following_stops.php?route=" + route + "&stop=" + stop;
 		if(time != null)
@@ -79,11 +108,23 @@ public class DataInterface
 		
 		try 
 		{
-			return new JSONArray(getURLContents(url));
+			List<Map<String, Object>> ret = new ArrayList<Map<String, Object>>();
+			
+			JSONArray arr = new JSONArray(getURLContents(url));
+			for(int i = 0; i < arr.length(); i++)
+			{
+				JSONObject station = arr.getJSONObject(i);
+				Map<String, Object> m = new HashMap<String, Object>();
+				m.put("stop_id", station.get("stop_id"));
+				m.put("time", station.get("time"));
+				ret.add(m);
+			}
+			
+			return ret;
 		} 
 		catch (JSONException e) 
 		{
-			return null;
+			return new ArrayList<Map<String, Object>>(0);
 		}
 	}
 	
@@ -92,7 +133,7 @@ public class DataInterface
 	 * 
 	 * @param maxDistance the maximum distance in meters.
 	 */
-	public static JSONArray getNearbyMajorStops(double lat, double lng, double maxDistance)
+	public List<Map<String, Object>> getNearbyMajorStops(double lat, double lng, double maxDistance)
 	{
 		String url = DATA_URL_BASE + "get_major_stops_near.php?latitude=" + lat + "&longitude=" + lng;
 		if(maxDistance > 0)
@@ -102,11 +143,26 @@ public class DataInterface
 		
 		try
 		{
-			return new JSONArray(getURLContents(url));
-		}
-		catch (JSONException e)
+			List<Map<String, Object>> ret = new ArrayList<Map<String, Object>>();
+			
+			JSONArray arr = new JSONArray(getURLContents(url));
+			for(int i = 0; i < arr.length(); i++)
+			{
+				JSONObject stop = arr.getJSONObject(i);
+				Map<String, Object> m = new HashMap<String, Object>();
+				m.put("stop_id", stop.get("id"));
+				m.put("name", stop.get("time"));
+				m.put("latitude", stop.get("latitude"));
+				m.put("longitude", stop.get("longitude"));
+				m.put("distance", stop.get("distance"));
+				ret.add(m);
+			}
+			
+			return ret;
+		} 
+		catch (JSONException e) 
 		{
-			return null;
+			return new ArrayList<Map<String, Object>>(0);
 		}
 	}
 	
