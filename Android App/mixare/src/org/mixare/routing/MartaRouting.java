@@ -285,12 +285,12 @@ public class MartaRouting
 			
 			TimeStop ts = r.getFollowingStops(origin.stopid, time).get(0);
 			ts.isStartStop = true;
-			enqueu(ts);
+			enqueue(ts);
 			
 			//push depth # stops (right now = two) at a time to make a pseudo DFS
 			for (int i = 1; i < depth; i++)
 			{
-				enqueu(r.getFollowingStops(origin.stopid, time).get(i));
+				enqueue(r.getFollowingStops(origin.stopid, time).get(i));
 			}
 			count++;
 		}
@@ -302,7 +302,7 @@ public class MartaRouting
 	 * Ensures don't push the same TimeStop
 	 * @param ts
 	 */
-	public void enqueu(TimeStop ts)
+	public void enqueue(TimeStop ts)
 	{
 		if (ts.enqueued)
 			return;
@@ -337,7 +337,14 @@ public class MartaRouting
 			//Check if solution - already took care of
 			for(Route r : ts.getRoutesLeaving())
 			{
-				
+				for (TimeStop t2 : r.getFollowingStops(ts))
+				{
+					enqueue(t2);
+					if (solutions >= maxSolutions)
+					{
+						logPrint("Found "+solutions+" solutions");
+					}
+				}
 			}
 		}
 	}
