@@ -24,6 +24,7 @@ public class HelloItemizedOverlay extends ItemizedOverlay
 	public HelloItemizedOverlay(Drawable defaultMarker, Context context) {
 		this(boundCenterBottom(defaultMarker));
 		mContext = context;
+		populate();
 	}
 
 	/**

@@ -60,7 +60,7 @@ public class RoutePoint
 	public RoutePoint(double lat, double lng, String type, String title,
 			String snippet, Time arrivalTime, RoutePoint nextRoutePoint)
 	{
-		//Fix
+		this(new GeoPoint((int) (lat * 1e6), (int) (lng*1e6)), type, title, snippet, arrivalTime, nextRoutePoint);
 	}
 
 	//FIX ME
