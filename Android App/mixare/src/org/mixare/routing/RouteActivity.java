@@ -74,12 +74,15 @@ public class RouteActivity extends MapActivity {
 						"snippet 2", Time.valueOf("01:30:00"), null);
         RoutePoint rp1 = new RoutePoint(bus1Lat, bus1Lng, "bus", "title 1",
 						"snippet 1", Time.valueOf("01:00:00"), rp2);
-        
-        route = Arrays.asList(new RoutePoint[]
-		{
-        	rp1,
-        	rp2        				
-		});
+       
+        if (route == null)
+        {
+        	route = Arrays.asList(new RoutePoint[]
+			{
+	        	rp1,
+	        	rp2        				
+			});
+        }
         
         // ICON SETUP
         // Walking icons 

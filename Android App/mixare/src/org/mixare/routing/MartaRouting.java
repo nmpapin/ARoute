@@ -25,6 +25,8 @@ public class MartaRouting
 	
 	protected static List<Map<String, Object>> lastQueryList;
 	
+	public static TimeStopGraph currentGraph;
+	
 	/**
 	 * Change with context change so that always uses correct context
 	 * default = MixView.dataView.getContext() aka mixcontext

@@ -12,6 +12,14 @@ import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 
+/**
+ * 
+ * 
+ * TODO: Need to modify time to take into account date
+ * 		so that next day stops will work correctly
+ * @author sghuman
+ *
+ */
 public class TimeStop extends Stop
 {
 	public int tStopID; //unique designator of "stopid"+"hours"+"mins"
@@ -170,7 +178,7 @@ public class TimeStop extends Stop
 			return false;
 		TimeStop ts = (TimeStop) o;
 		
-		if (tStopID == ts.tStopID && time.toString().equals(ts.time.toString()))
+		if (tStopID == ts.tStopID)
 			return true;
 		else
 			return false;
@@ -180,4 +188,31 @@ public class TimeStop extends Stop
 	{
 		return super.equals(s);
 	}
+	
+	/**
+	 * Compares time in minutes
+	 * 
+	 * @return time difference in minutes
+	 * 				negative if second stop after (<)
+	 */
+	public int compareTime(TimeStop t)
+	{
+		return stoptimeInMins - t.stoptimeInMins;
+	}
+	
+	
+	//TODO: fix times to take in day as well so next day stops work
+	public boolean isBefore(TimeStop t)
+	{
+		//TODO: return time.before(t.time);
+		return compareTime(t) < 0;
+	}
+	
+	/**
+	 * 
+	 */
+	//public int compareTime(int tStopID)
+	//{
+	//	return ..
+	//}
 }
