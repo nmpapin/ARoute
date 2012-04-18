@@ -1,11 +1,17 @@
 package org.mixare.data;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.text.format.Time;
 
 public class DBDataInterface extends DataInterface 
 {
@@ -65,5 +71,16 @@ public class DBDataInterface extends DataInterface
 		}
 	}
 	
-	
+	@Override
+	public List<Map<String, Object>> getRoutesLeaving(int stop, Time time)
+	{
+		if(mDB != null)
+		{
+			return mDB.getRoutesLeaving(stop, time.format("%T"));
+		}
+		else
+		{
+			return super.getRoutesLeaving(stop, time);
+		}
+	}
 }

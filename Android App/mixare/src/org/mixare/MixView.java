@@ -28,6 +28,7 @@ package org.mixare;
 
 import static android.hardware.SensorManager.SENSOR_DELAY_GAME;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -37,6 +38,7 @@ import org.mixare.R.drawable;
 import org.mixare.data.DataHandler;
 import org.mixare.data.DataInterface;
 import org.mixare.data.DataSourceList;
+import org.mixare.data.RoutingDataBaseHelper;
 import org.mixare.gui.PaintScreen;
 import org.mixare.render.Matrix;
 import org.mixare.routing.RouteActivity;
@@ -213,9 +215,6 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 		super.onCreate(savedInstanceState);
 
 		try {
-
-
-
 			handleIntent(getIntent());
 
 			final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -475,7 +474,7 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 	public boolean onCreateOptionsMenu(Menu menu) {
 		int base = Menu.FIRST;
 		/*define the first*/
-		//MenuItem item1 =menu.add(base, base, base, getString(DataView.MENU_ITEM_1)); 
+		MenuItem item1 =menu.add(base, base, base, getString(DataView.MENU_ITEM_1)); 
 		MenuItem item2 =menu.add(base, base+1, base+1,  getString(DataView.MENU_ITEM_2)); 
 		MenuItem item3 =menu.add(base, base+2, base+2,  getString(DataView.MENU_ITEM_3));
 		MenuItem item4 =menu.add(base, base+3, base+3,  getString(DataView.MENU_ITEM_4));
@@ -484,7 +483,7 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 		MenuItem item7 =menu.add(base, base+6, base+6,  getString(DataView.MENU_ITEM_7));
 
 		/*assign icons to the menu items*/
-		//item1.setIcon(drawable.icon_datasource);
+		item1.setIcon(drawable.icon_datasource);
 		item2.setIcon(android.R.drawable.ic_menu_view);
 		item3.setIcon(android.R.drawable.ic_menu_mapmode);
 		item4.setIcon(android.R.drawable.ic_menu_zoom);
@@ -499,15 +498,7 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 	public boolean onOptionsItemSelected(MenuItem item){
 		switch(item.getItemId()){
 		/*Data sources*/
-		case 1:		
-			if(!dataView.isLauncherStarted()){
-				MixListView.setList(1);
-				Intent intent = new Intent(MixView.this, DataSourceList.class); 
-				startActivityForResult(intent, 40);
-			}
-			else{
-				Toast.makeText( this, getString(DataView.OPTION_NOT_AVAILABLE_STRING_ID), Toast.LENGTH_LONG ).show();		
-			}
+		case 1:
 			break;
 			/*List view*/
 		case 2:

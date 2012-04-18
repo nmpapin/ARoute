@@ -4,6 +4,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -12,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.format.Time;
 
 public class RoutingDataBaseHelper extends SQLiteOpenHelper 
 {
@@ -139,10 +142,10 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 	{
 		Cursor cur = mDataBase.rawQuery
 		(
-				"SELECT latitude, longitude" +
-				"FROM stop" +
+				"SELECT latitude, longitude " +
+				"FROM stop " +
 				"WHERE _id = " + stop +
-				"ORDER BY distance ASC;", 
+				" ORDER BY distance ASC;", 
 				new String[0]
 		);
 		
@@ -165,5 +168,21 @@ public class RoutingDataBaseHelper extends SQLiteOpenHelper
 		Double distance = R * c;
 		
 		return distance;
+	}
+	
+	public List<Map<String, Object>> getRoutesLeaving(int stop, String time)
+	{
+		Cursor cur = mDataBase.rawQuery
+		(
+			"SELECT DISTINCT rv.id, r.marta_id, r.name, rv.direction, rs.id AS route_stop_id " +
+			"FROM route AS r " +
+			"JOIN route_variation AS rv ON r.id = rv.route_id " +
+			"JOIN route_stop AS rs ON rv.id = rs.route_var_id " +
+			"JOIN stop AS s ON rs.stop_id = s.id " + 
+			"WHERE s.id = " + stop + ";", 
+			new String[0]
+		);
+		
+		
 	}
 }
