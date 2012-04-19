@@ -62,7 +62,7 @@ public class RouteActivity extends MapActivity {
         
                 
         
-        MartaRouting mr = new MartaRouting(startLat, startLng, endLat, endLng);
+        /*MartaRouting mr = new MartaRouting(startLat, startLng, endLat, endLng);
         
         //TODO: turn off debug mode
         if (MartaRouting.DEBUG_MODE == true)
@@ -70,7 +70,7 @@ public class RouteActivity extends MapActivity {
         	mr = MartaRouting.MartaRoutingTestShort();
         }
         
-        List<RoutePoint> route = mr.getRoute();
+        List<RoutePoint> route = mr.getRoute();*/
         Routing router = new Routing();
         
         
@@ -85,14 +85,11 @@ public class RouteActivity extends MapActivity {
         RoutePoint rp1 = new RoutePoint(bus1Lat, bus1Lng, "bus", "title 1",
 						"snippet 1", Time.valueOf("01:00:00"), rp2);
        
-        if (route == null)
-        {
-        	route = Arrays.asList(new RoutePoint[]
-			{
-	        	rp1,
-	        	rp2        				
-			});
-        }
+    	List<RoutePoint> route = Arrays.asList(new RoutePoint[]
+		{
+        	rp1,
+        	rp2        				
+		});
         
         // ICON SETUP
         // Walking icons 
