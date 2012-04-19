@@ -171,17 +171,17 @@ public class TimeStop extends Stop
 	 * @param distance
 	 * @return
 	 */
-	public ArrayList<Stop> getStopsNearby(int distance)
+	public ArrayList<Stop> getStopsNearby(int distance, DataInterface db)
 	{
-		return super.getStopsNear(lat, lng, distance);
+		return super.getStopsNear(lat, lng, distance, db);
 	}
 	
 	/**
 	 * 
 	 */
-	public ArrayList<Route> getRoutesLeaving()
+	public ArrayList<Route> getRoutesLeaving(DataInterface db)
 	{
-		return super.getRoutesLeaving(time);
+		return super.getRoutesLeaving(time, db);
 	}
 	
 	public boolean equals(Object o)

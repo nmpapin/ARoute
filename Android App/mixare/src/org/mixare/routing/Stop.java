@@ -43,19 +43,22 @@ public class Stop
 	 * 
 	 * @param stopid
 	 */
-	public Stop(int stopid)
+	public Stop(int stopid, DataInterface db)
 	{
-		queryAllStopData();
+		this.stopid = stopid;
+		queryAllStopData(db);
 	}
 	
 	/**
 	 * Retrieve all stop information from database
 	 */
-	public void queryAllStopData()
+	public void queryAllStopData(DataInterface db)
 	{
-		Map<String, Object> m = MartaRouting.dbi.getStopData(stopid);
+		Map<String, Object> m = db.getStopData(stopid);
 		
-		stopid = this.parseStopID(m);
+		Log.i("STOPID", "" + stopid);
+		Log.i("failure", "" + (m==null));
+		
 		lat = this.parseStopLat(m);
 		lng = this.parseStopLng(m);
 		name = this.parseStopName(m);
@@ -84,26 +87,15 @@ public class Stop
 		 * @param distance	distance to search
 		 * @return
 		 */
-		public static ArrayList<Stop> getStopsNear(double lat, double lng, int distance)
-		{
-			DataInterface dbi = MartaRouting.dbi; 
-			boolean createdNewDBI = false;
-			
-			if (dbi == null)
-			{
-				dbi = MartaRouting.createDBI(); //use this method so later will give DBDataInterface
-				createdNewDBI = true;
-			}
-			
-			List<Map<String, Object>> stopMap = dbi.getNearbyStops(lat, lng, distance);
-			
-			if (createdNewDBI)
-				dbi.close();
+		public static ArrayList<Stop> getStopsNear(double lat, double lng, int distance, DataInterface db)
+		{			
+			List<Map<String, Object>> stopMap = db.getNearbyStops(lat, lng, distance);
 			
 			try
 			{
 				return Stop.parseStopList(stopMap);
-			} catch (StopException e)
+			} 
+			catch (StopException e)
 			{
 				Log.i("TimeStop", "failed to query nearby stops");
 				e.printStackTrace();
@@ -158,7 +150,7 @@ public class Stop
 			try {
 				int id = Integer.parseInt(m.get("stop_id").toString());
 				double lat = Double.parseDouble(m.get("latitude").toString());
-				double lng = Double.parseDouble(m.get("latitude").toString());
+				double lng = Double.parseDouble(m.get("longitude").toString());
 				
 				try {
 					String name = m.get("name").toString();
@@ -182,7 +174,7 @@ public class Stop
 		}
 		
 		public static int parseStopID(Map<String, Object> m) throws StopException
-		{
+		{			
 			try {
 				int id = Integer.parseInt(m.get("stop_id").toString());
 				
@@ -198,6 +190,14 @@ public class Stop
 		
 		public static double parseStopLat(Map<String, Object> m) throws StopException
 		{
+			
+			
+			for(Map.Entry<String, Object> e : m.entrySet())
+			{
+				Log.i("KEY_ENTRY_THINGY", "" + e.getKey() + ": " + e.getValue());
+			}
+			
+			
 			try {
 				double lat = Double.parseDouble(m.get("latitude").toString());
 				
@@ -214,7 +214,7 @@ public class Stop
 		public static double parseStopLng(Map<String, Object> m) throws StopException
 		{
 			try {
-				double lng = Double.parseDouble(m.get("latitude").toString());
+				double lng = Double.parseDouble(m.get("longitude").toString());
 				
 				return lng;
 			}
@@ -243,43 +243,43 @@ public class Stop
 		
 		public static void logPrint(String msg)
 		{
-			Log.i("Stop", msg);
+			//Log.i("Stop", msg);
 		}
 		
 		public static void logPrintMinor(String msg)
 		{
-			Log.i("StopMinor", msg);
+			//Log.i("StopMinor", msg);
 		}
 
-		public ArrayList<Route> getRoutesLeaving(Time time)
+		public ArrayList<Route> getRoutesLeaving(Time time, DataInterface db)
 		{
-			return Route.getRoutesLeaving(stopid, time);
+			return Route.getRoutesLeaving(stopid, time, db);
 		}
 		
-		public boolean isStation()
+		public boolean isStation(DataInterface db)
 		{
-			return isStation(stopid);
+			return isStation(stopid, db);
 		}
 		
-		public static boolean isStation(int stopid)
+		public static boolean isStation(int stopid, DataInterface db)
 		{
 			if(stations.get(stopid) != null)
 				return stations.get(stopid);
 			else
 			{
-				boolean isSta = MartaRouting.dbi.isStation(stopid);
+				boolean isSta = db.isStation(stopid);
 				stations.put(stopid, isSta);
 				return isSta;
 			}
 		}
 		
-		public double distanceToStop(double fromLat, double fromLng)
+		public double distanceToStop(double fromLat, double fromLng, DataInterface db)
 		{
-			return distanceToStop(fromLat, fromLng, stopid);
+			return distanceToStop(fromLat, fromLng, stopid, db);
 		}
 		
-		public static double distanceToStop(double fromLat, double fromLng, int stopid)
+		public static double distanceToStop(double fromLat, double fromLng, int stopid, DataInterface db)
 		{
-			return MartaRouting.dbi.distanceToStop(fromLat, fromLng, stopid);
+			return db.distanceToStop(fromLat, fromLng, stopid);
 		}
 }

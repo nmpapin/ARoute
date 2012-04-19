@@ -71,6 +71,13 @@ public class RouteActivity extends MapActivity {
         }
         
         List<RoutePoint> route = mr.getRoute();*/
+        RoutingSearchProblem sp = new RoutingSearchProblem(this, destLoc, startLoc);
+        RoutingSearch search = new RoutingSearch(sp);
+        
+        List<RoutePoint> route = search.search();
+        
+        Log.i("ROUTE_LEN", "" + route.size());
+        
         Routing router = new Routing();
         
         
@@ -85,11 +92,11 @@ public class RouteActivity extends MapActivity {
         RoutePoint rp1 = new RoutePoint(bus1Lat, bus1Lng, "bus", "title 1",
 						"snippet 1", Time.valueOf("01:00:00"), rp2);
        
-    	List<RoutePoint> route = Arrays.asList(new RoutePoint[]
-		{
-        	rp1,
-        	rp2        				
-		});
+    	//route = Arrays.asList(new RoutePoint[]
+		//{
+        //	rp1,
+        //	rp2        				
+		//});
         
         // ICON SETUP
         // Walking icons 

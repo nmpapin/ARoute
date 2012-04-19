@@ -45,7 +45,7 @@ public class MartaRouting
 	public double startLng;
 	public double destLat;
 	public double destLng;
-	public static DataInterface dbi; //null when not used, must always check and open
+	private static DataInterface dbi; //null when not used, must always check and open
 	
 	public int startCounter = 0;
 	public int destCounter = 0;
@@ -94,8 +94,8 @@ public class MartaRouting
 								//May actually be completely unnecessary
 		
 		dbi = createDBI();
-		possibleStartStops = Stop.getStopsNear(startLat, startLng, NEARBY_DISTANCE);
-		possibleDestStops = Stop.getStopsNear(destLat, destLng, NEARBY_DISTANCE);
+		possibleStartStops = Stop.getStopsNear(startLat, startLng, NEARBY_DISTANCE, dbi);
+		possibleDestStops = Stop.getStopsNear(destLat, destLng, NEARBY_DISTANCE, dbi);
 		calculateRoute();
 		checkTimeStopGraph();
 
@@ -278,7 +278,7 @@ public class MartaRouting
 		
 		for(TimeStop t : stops)
 		{
-			double dist = t.distanceToStop(startLat, startLng);
+			double dist = t.distanceToStop(startLat, startLng, dbi);
 			if (dist < closestDistance)
 			{
 				closest = t;
@@ -470,7 +470,7 @@ public class MartaRouting
 	 */
 	public TimeStopGraph ModBredthFirstSearch(Stop origin, int width, Time time)
 	{
-		ArrayList<Route> routes = origin.getRoutesLeaving(time); //get routes servicing
+		ArrayList<Route> routes = origin.getRoutesLeaving(time, dbi); //get routes servicing
 		logPrint("Received "+routes.size()+" routes leaving "+origin+" @ "+timeToString(time));
 		
 		int count = 0;
@@ -479,7 +479,7 @@ public class MartaRouting
 			if (count >= width)
 				break;
 			
-			ArrayList<TimeStop> stops = r.getFollowingStops(origin.stopid, time);
+			ArrayList<TimeStop> stops = r.getFollowingStops(origin.stopid, time, dbi);
 			logPrint("Received "+stops.size()+" stops after stop "+origin.stopid
 								+" on route "+r.routeID+" after "+timeToString(time));
 		
@@ -526,7 +526,7 @@ public class MartaRouting
 			solutions++;
 			
 			logPrintImportant("Found Destination Stop: "+ts);
-			logPrintImportant("Distance to final destination"+ ts.distanceToStop(destLat, destLng));
+			logPrintImportant("Distance to final destination"+ ts.distanceToStop(destLat, destLng, dbi));
 			
 			return true; //Do not add to queue
 		}
@@ -565,10 +565,10 @@ public class MartaRouting
 		{
 			TimeStop ts = dequeue();
 			//Check if solution - already took care of
-			for(Route r : ts.getRoutesLeaving())
+			for(Route r : ts.getRoutesLeaving(dbi))
 			{
 				int count = 0;
-				ArrayList<TimeStop> stops = r.getFollowingStops(ts); 
+				ArrayList<TimeStop> stops = r.getFollowingStops(ts, dbi); 
 				for (TimeStop t2 : stops)
 				{
 					//TODO: check that breaks inner loop only

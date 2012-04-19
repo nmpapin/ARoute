@@ -2,6 +2,7 @@ package org.mixare.routing;
 
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.mixare.data.DataInterface;
@@ -22,30 +23,28 @@ public class Route
 		this(routeID, "");
 	}
 	
-	public ArrayList<TimeStop> getFollowingStops(int stopid, Time time)
+	public ArrayList<TimeStop> getFollowingStops(int stopid, Time time, DataInterface db)
 	{
-		return getFollowingStops(routeID, stopid, time);
+		return getFollowingStops(routeID, stopid, time, db);
 	}
 	
-	public ArrayList<TimeStop> getFollowingStops(TimeStop ts)
+	public ArrayList<TimeStop> getFollowingStops(TimeStop ts, DataInterface db)
 	{
-		return getFollowingStops(routeID, ts);
+		return getFollowingStops(routeID, ts, db);
 	}
 
-	public static ArrayList<TimeStop> getFollowingStops(int routeID, TimeStop ts)
+	public static ArrayList<TimeStop> getFollowingStops(int routeID, TimeStop ts, DataInterface db)
 	{
-		return getFollowingStops(routeID, ts.stopid, ts.time);
+		return getFollowingStops(routeID, ts.stopid, ts.time, db);
 	}
 	
-	public static ArrayList<TimeStop> getFollowingStops(int routeID, int stopid, Time time)
+	public static ArrayList<TimeStop> getFollowingStops(int routeID, int stopid, Time time, DataInterface db)
 	{
-		DataInterface dbi = MartaRouting.dbi;
-		
-		MartaRouting.lastQueryList = dbi.getFollowingStops(routeID, stopid, time);
+		List<Map<String, Object>> following = db.getFollowingStops(routeID, stopid, time);
 		
 		ArrayList<TimeStop> listTimeStops = new ArrayList<TimeStop>();
 		
-		for (Map<String, Object> m : MartaRouting.lastQueryList)
+		for (Map<String, Object> m : following)
 		{
 			TimeStop t = TimeStop.createTimeStop(Stop.parseStopMap(m),
 												(Time) m.get("time"));
@@ -53,33 +52,30 @@ public class Route
 		}
 		
 		return listTimeStops;
-		
 	}
 	
-	public ArrayList<TimeStop> getFollowingStations(int stopid, Time time)
+	public ArrayList<TimeStop> getFollowingStations(int stopid, Time time, DataInterface db)
 	{
-		return getFollowingStations(routeID, stopid, time);
+		return getFollowingStations(routeID, stopid, time, db);
 	}
 	
-	public ArrayList<TimeStop> getFollowingStations(TimeStop ts)
+	public ArrayList<TimeStop> getFollowingStations(TimeStop ts, DataInterface db)
 	{
-		return getFollowingStations(routeID, ts);
-	}
-	
-	public static ArrayList<TimeStop> getFollowingStations(int routeID, TimeStop ts)
-	{
-		return getFollowingStations(routeID, ts.stopid, ts.time);
+		return getFollowingStations(routeID, ts, db);
 	}
 
-	public static ArrayList<TimeStop> getFollowingStations(int routeID, int stopid, Time time)
+	public static ArrayList<TimeStop> getFollowingStations(int routeID, TimeStop ts, DataInterface db)
 	{
-		DataInterface dbi = MartaRouting.dbi;
-		
-		MartaRouting.lastQueryList = dbi.getFollowingStations(routeID, stopid, time);
+		return getFollowingStations(routeID, ts.stopid, ts.time, db);
+	}
+	
+	public static ArrayList<TimeStop> getFollowingStations(int routeID, int stopid, Time time, DataInterface db)
+	{
+		List<Map<String, Object>> following = db.getFollowingStations(routeID, stopid, time);
 		
 		ArrayList<TimeStop> listTimeStops = new ArrayList<TimeStop>();
 		
-		for (Map<String, Object> m : MartaRouting.lastQueryList)
+		for (Map<String, Object> m : following)
 		{
 			TimeStop t = TimeStop.createTimeStop(Stop.parseStopMap(m),
 												(Time) m.get("time"));
@@ -87,16 +83,15 @@ public class Route
 		}
 		
 		return listTimeStops;
-		
 	}
 	
 	
-	public static ArrayList<Route> getRoutesLeaving(int stopid, Time time)
+	public static ArrayList<Route> getRoutesLeaving(int stopid, Time time, DataInterface db)
 	{
-		MartaRouting.lastQueryList = MartaRouting.dbi.getRoutesLeaving(stopid, time);
+		List<Map<String, Object>> leaving = db.getRoutesLeaving(stopid, time);
 		ArrayList<Route> results = new ArrayList<Route>();
 		
-		for(Map<String, Object> m : MartaRouting.lastQueryList)
+		for(Map<String, Object> m : leaving)
 		{
 			results.add(new Route(parseRouteID(m), parseMartaID(m)));
 		}
