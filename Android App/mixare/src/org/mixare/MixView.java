@@ -477,7 +477,7 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 	public boolean onCreateOptionsMenu(Menu menu) {
 		int base = Menu.FIRST;
 		/*define the first*/
-		MenuItem item1 =menu.add(base, base, base, getString(DataView.MENU_ITEM_1)); 
+		//MenuItem item1 =menu.add(base, base, base, getString(DataView.MENU_ITEM_1)); 
 		MenuItem item2 =menu.add(base, base+1, base+1,  getString(DataView.MENU_ITEM_2)); 
 		MenuItem item3 =menu.add(base, base+2, base+2,  getString(DataView.MENU_ITEM_3));
 		MenuItem item4 =menu.add(base, base+3, base+3,  getString(DataView.MENU_ITEM_4));
@@ -486,7 +486,7 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 		MenuItem item7 =menu.add(base, base+6, base+6,  getString(DataView.MENU_ITEM_7));
 
 		/*assign icons to the menu items*/
-		item1.setIcon(drawable.icon_datasource);
+		//item1.setIcon(drawable.icon_datasource);
 		item2.setIcon(android.R.drawable.ic_menu_view);
 		item3.setIcon(android.R.drawable.ic_menu_mapmode);
 		item4.setIcon(android.R.drawable.ic_menu_zoom);
@@ -504,11 +504,11 @@ public class MixView extends Activity implements SensorEventListener, OnTouchLis
 		/*Data sources*/
 		case 1:
 			//Spot for test code
-			MartaRouting mr = MartaRouting.MartaRoutingTestShort();
+			//MartaRouting mr = MartaRouting.MartaRoutingTestShort();
 			
-			mr.logPrint("Starting: "+mr.startLat+", "+mr.startLng);
+			//mr.logPrint("Starting: "+mr.startLat+", "+mr.startLng);
 			
-			mr.logPrint("Dest: "+mr.destLat+", "+mr.destLng);
+			//mr.logPrint("Dest: "+mr.destLat+", "+mr.destLng);
 			
 			break;
 			/*List view*/
